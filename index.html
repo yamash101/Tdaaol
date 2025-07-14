@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بوابة التداول الشخصية - منصتك الآمنة</title>
+    <title>بوابة التداول الشخصية - منصتك الآمنة والموثوقة</title>
     <!-- استيراد Tailwind CSS لتصميم سريع ومرن -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- خط Inter (يمكنك استبداله بخط عربي أجمل إذا وجدت) -->
@@ -24,7 +24,7 @@
             width: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: #2d3748; /* لون خلفية شريط التمرير */
+            background: #1a202c; /* لون خلفية شريط التمرير */
         }
         ::-webkit-scrollbar-thumb {
             background: #4a5568; /* لون مقبض شريط التمرير */
@@ -36,124 +36,132 @@
     </style>
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col">
-    <!-- رأس الصفحة (Header) -->
-    <header class="bg-gray-800 p-4 shadow-md">
+    <!-- رأس الصفحة (Header) - شريط التنقل العلوي -->
+    <header class="bg-gray-800 p-4 shadow-lg">
         <div class="container mx-auto flex justify-between items-center">
             <!-- شعار الموقع -->
-            <h1 class="text-3xl font-bold text-blue-400">بوابة التداول</h1>
-            <!-- أزرار التنقل (ستظهر بعد تسجيل الدخول) -->
-            <nav id="main-nav" class="hidden md:flex space-x-4 space-x-reverse">
-                <a href="#dashboard" class="text-gray-300 hover:text-blue-400 transition-colors duration-300 p-2 rounded-md">لوحة التحكم</a>
-                <a href="#trade" class="text-gray-300 hover:text-blue-400 transition-colors duration-300 p-2 rounded-md">التداول</a>
-                <a href="#deposit-withdraw" class="text-gray-300 hover:text-blue-400 transition-colors duration-300 p-2 rounded-md">إيداع/سحب</a>
-                <button id="logout-button" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-md transition-colors duration-300">تسجيل الخروج</button>
+            <h1 class="text-3xl font-extrabold text-blue-400">بوابة التداول <span class="text-white text-xl font-light">الخاصة بك</span></h1>
+            <!-- أزرار التنقل الرئيسية (تظهر على الشاشات الكبيرة) -->
+            <nav id="main-nav" class="hidden md:flex space-x-4 space-x-reverse items-center">
+                <a href="#" data-section="dashboard-section" class="nav-link text-gray-300 hover:text-blue-400 transition-colors duration-300 p-2 rounded-md font-semibold">لوحة التحكم</a>
+                <a href="#" data-section="trade-section" class="nav-link text-gray-300 hover:text-blue-400 transition-colors duration-300 p-2 rounded-md font-semibold">التداول الفوري</a>
+                <a href="#" data-section="deposit-withdraw-section" class="nav-link text-gray-300 hover:text-blue-400 transition-colors duration-300 p-2 rounded-md font-semibold">إيداع/سحب</a>
+                <button id="logout-button" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105">
+                    <i class="fas fa-sign-out-alt ml-2"></i> تسجيل الخروج
+                </button>
             </nav>
-            <!-- زر قائمة الجوال (لشاشات الجوال الصغيرة) -->
-            <button id="mobile-menu-button" class="md:hidden text-gray-300 focus:outline-none">
-                <i class="fas fa-bars text-2xl"></i>
+            <!-- زر قائمة الجوال (يظهر على الشاشات الصغيرة) -->
+            <button id="mobile-menu-button" class="md:hidden text-gray-300 focus:outline-none p-2 rounded-md hover:bg-gray-700 transition-colors duration-300">
+                <i class="fas fa-bars text-3xl"></i>
             </button>
         </div>
     </header>
 
-    <!-- قائمة الجوال المنبثقة -->
-    <div id="mobile-menu" class="hidden md:hidden bg-gray-800 p-4 shadow-lg absolute w-full z-10">
-        <nav class="flex flex-col space-y-2">
-            <a href="#dashboard" class="text-gray-300 hover:text-blue-400 transition-colors duration-300 p-2 rounded-md">لوحة التحكم</a>
-            <a href="#trade" class="text-gray-300 hover:text-blue-400 transition-colors duration-300 p-2 rounded-md">التداول</a>
-            <a href="#deposit-withdraw" class="text-gray-300 hover:text-blue-400 transition-colors duration-300 p-2 rounded-md">إيداع/سحب</a>
-            <button id="mobile-logout-button" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-md transition-colors duration-300 w-full">تسجيل الخروج</button>
+    <!-- قائمة الجوال المنبثقة (تظهر عند النقر على زر القائمة في الجوال) -->
+    <div id="mobile-menu" class="hidden md:hidden bg-gray-800 p-6 shadow-2xl absolute w-full z-20 transition-all duration-300 ease-in-out">
+        <nav class="flex flex-col space-y-4 text-center">
+            <a href="#" data-section="dashboard-section" class="nav-link text-gray-300 hover:text-blue-400 transition-colors duration-300 p-3 rounded-md font-semibold text-lg">لوحة التحكم</a>
+            <a href="#" data-section="trade-section" class="nav-link text-gray-300 hover:text-blue-400 transition-colors duration-300 p-3 rounded-md font-semibold text-lg">التداول الفوري</a>
+            <a href="#" data-section="deposit-withdraw-section" class="nav-link text-gray-300 hover:text-blue-400 transition-colors duration-300 p-3 rounded-md font-semibold text-lg">إيداع/سحب</a>
+            <button id="mobile-logout-button" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105 w-full">
+                <i class="fas fa-sign-out-alt ml-2"></i> تسجيل الخروج
+            </button>
         </nav>
     </div>
 
     <!-- المحتوى الرئيسي للموقع (سيتم تبديله ديناميكياً بواسطة JavaScript) -->
-    <main class="flex-grow container mx-auto p-4">
+    <main class="flex-grow container mx-auto p-4 flex flex-col justify-center items-center">
         <!-- قسم المصادقة (التسجيل / تسجيل الدخول) -->
-        <section id="auth-section" class="flex justify-center items-center h-full">
-            <div class="bg-gray-800 p-8 rounded-lg shadow-xl w-full max-w-md">
-                <h2 class="text-2xl font-bold text-center mb-6 text-blue-400" id="auth-title">تسجيل الدخول</h2>
-                <form id="auth-form" class="space-y-4">
-                    <div>
-                        <label for="username" class="block text-gray-300 text-sm font-bold mb-2">اسم المستخدم:</label>
-                        <input type="text" id="username" name="username" class="shadow appearance-none border border-gray-700 rounded-md w-full py-3 px-4 text-gray-200 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700" placeholder="أدخل اسم المستخدم" required>
-                    </div>
-                    <div>
-                        <label for="password" class="block text-gray-300 text-sm font-bold mb-2">كلمة المرور:</label>
-                        <input type="password" id="password" name="password" class="shadow appearance-none border border-gray-700 rounded-md w-full py-3 px-4 text-gray-200 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700" placeholder="أدخل كلمة المرور" required>
-                    </div>
-                    <button type="submit" id="auth-submit-button" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-md w-full transition-colors duration-300 transform hover:scale-105">تسجيل الدخول</button>
-                </form>
-                <div class="mt-6 text-center">
-                    <p class="text-gray-400">
-                        ليس لديك حساب؟ <button id="toggle-auth-mode" class="text-blue-400 hover:underline focus:outline-none">سجل الآن</button>
-                    </p>
+        <section id="auth-section" class="w-full max-w-md bg-gray-800 p-8 rounded-xl shadow-2xl transform transition-all duration-500 ease-in-out scale-100 opacity-100">
+            <h2 class="text-3xl font-extrabold text-center mb-8 text-blue-400" id="auth-title">مرحباً بك في بوابة التداول</h2>
+            <p class="text-gray-400 text-center mb-6">سجل الدخول أو أنشئ حساباً جديداً لتجربة تداول سلسة وموثوقة.</p>
+            <form id="auth-form" class="space-y-6">
+                <div>
+                    <label for="username" class="block text-gray-300 text-sm font-bold mb-2">اسم المستخدم:</label>
+                    <input type="text" id="username" name="username" class="shadow-inner appearance-none border border-gray-700 rounded-lg w-full py-3 px-4 text-gray-200 leading-tight focus:outline-none focus:ring-3 focus:ring-blue-500 bg-gray-700 placeholder-gray-500" placeholder="أدخل اسم المستخدم" required>
                 </div>
-                <div id="auth-message" class="mt-4 text-center text-red-400"></div>
+                <div>
+                    <label for="password" class="block text-gray-300 text-sm font-bold mb-2">كلمة المرور:</label>
+                    <input type="password" id="password" name="password" class="shadow-inner appearance-none border border-gray-700 rounded-lg w-full py-3 px-4 text-gray-200 leading-tight focus:outline-none focus:ring-3 focus:ring-blue-500 bg-gray-700 placeholder-gray-500" placeholder="أدخل كلمة المرور" required>
+                </div>
+                <button type="submit" id="auth-submit-button" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full w-full transition-all duration-300 transform hover:scale-105 shadow-lg">
+                    <i class="fas fa-sign-in-alt ml-2"></i> تسجيل الدخول
+                </button>
+            </form>
+            <div class="mt-8 text-center">
+                <p class="text-gray-400 text-lg">
+                    ليس لديك حساب؟ <button id="toggle-auth-mode" class="text-blue-400 hover:underline focus:outline-none font-semibold transition-colors duration-300">سجل الآن</button>
+                </p>
             </div>
+            <div id="auth-message" class="mt-6 text-center text-red-400 font-semibold"></div>
         </section>
 
         <!-- قسم ربط حساب باينانس (يظهر بعد تسجيل الدخول لأول مرة) -->
-        <section id="link-binance-section" class="hidden flex justify-center items-center h-full">
-            <div class="bg-gray-800 p-8 rounded-lg shadow-xl w-full max-w-md">
-                <h2 class="text-2xl font-bold text-center mb-6 text-blue-400">ربط حساب باينانس</h2>
-                <p class="text-gray-300 mb-4 text-center">
-                    للبدء في التداول، يرجى ربط حساب باينانس الخاص بك.
-                    <br>
-                    <span class="font-bold text-yellow-400">هام جداً:</span> لا تفعل صلاحية السحب (Withdrawal) عند إنشاء مفتاح الـ API!
-                </p>
-                <div class="bg-gray-700 p-4 rounded-md mb-6">
-                    <h3 class="text-xl font-semibold text-gray-200 mb-2">خطوات الحصول على مفتاح الـ API من باينانس:</h3>
-                    <ol class="list-decimal list-inside text-gray-300 space-y-2">
-                        <li>قم بتسجيل الدخول إلى حسابك في باينانس.</li>
-                        <li>اذهب إلى "الملف الشخصي" ثم "إدارة API" (API Management).</li>
-                        <li>انقر على "إنشاء مفتاح API" (Create API Key).</li>
-                        <li>قم بتسمية المفتاح (مثلاً: "منصتي الخاصة").</li>
-                        <li><span class="font-bold text-red-400">تأكد من تفعيل صلاحيتي "القراءة" (Enable Reading) و "التداول الفوري" (Enable Spot & Margin Trading) فقط.</span></li>
-                        <li><span class="font-bold text-red-400">لا تفعل صلاحية "السحب" (Enable Withdrawals) أبداً للحفاظ على أمان أموالك.</span></li>
-                        <li>انسخ مفتاح الـ API (API Key) ومفتاح السري (Secret Key) الظاهرين لك.</li>
-                    </ol>
-                    <a href="https://www.binance.com/en/my/settings/api-management" target="_blank" class="block text-center mt-4 bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-md transition-colors duration-300 transform hover:scale-105">
-                        <i class="fas fa-external-link-alt ml-2"></i> اذهب إلى إدارة API في باينانس
-                    </a>
-                </div>
-                <form id="link-binance-form" class="space-y-4">
-                    <div>
-                        <label for="api-key" class="block text-gray-300 text-sm font-bold mb-2">مفتاح API (API Key):</label>
-                        <input type="text" id="api-key" name="apiKey" class="shadow appearance-none border border-gray-700 rounded-md w-full py-3 px-4 text-gray-200 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700" placeholder="الصق مفتاح API هنا" required>
-                    </div>
-                    <div>
-                        <label for="secret-key" class="block text-gray-300 text-sm font-bold mb-2">المفتاح السري (Secret Key):</label>
-                        <input type="password" id="secret-key" name="secretKey" class="shadow appearance-none border border-gray-700 rounded-md w-full py-3 px-4 text-gray-200 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700" placeholder="الصق المفتاح السري هنا" required>
-                    </div>
-                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-md w-full transition-colors duration-300 transform hover:scale-105">ربط الحساب</button>
-                </form>
-                <div id="link-binance-message" class="mt-4 text-center text-red-400"></div>
+        <section id="link-binance-section" class="hidden w-full max-w-2xl bg-gray-800 p-8 rounded-xl shadow-2xl transform transition-all duration-500 ease-in-out">
+            <h2 class="text-3xl font-extrabold text-center mb-6 text-blue-400">ربط حساب باينانس</h2>
+            <p class="text-gray-300 mb-6 text-center text-lg">
+                للبدء في رحلة التداول الممتعة، يرجى ربط حساب باينانس الخاص بك بمنصتنا الآمنة.
+                <br>
+                <span class="font-bold text-yellow-400">تنبيه هام جداً للأمان:</span> عند إنشاء مفتاح الـ API في باينانس، **لا تفعل صلاحية السحب (Enable Withdrawals) أبداً!**
+            </p>
+            <div class="bg-gray-700 p-6 rounded-lg shadow-inner mb-8">
+                <h3 class="text-xl font-semibold text-gray-200 mb-4">خطوات سهلة للحصول على مفتاح الـ API من باينانس:</h3>
+                <ol class="list-decimal list-inside text-gray-300 space-y-3 text-base">
+                    <li>قم بتسجيل الدخول إلى حسابك في <span class="font-bold text-blue-300">باينانس</span>.</li>
+                    <li>اذهب إلى "الملف الشخصي" (Profile) ثم "إدارة API" (API Management).</li>
+                    <li>انقر على زر "إنشاء مفتاح API" (Create API Key).</li>
+                    <li>قم بتسمية المفتاح (مثلاً: "منصتي الخاصة").</li>
+                    <li><span class="font-bold text-green-400">تأكد من تفعيل صلاحيتي "القراءة" (Enable Reading) و "التداول الفوري" (Enable Spot & Margin Trading) فقط.</span></li>
+                    <li><span class="font-bold text-red-400">تكرار هام جداً: لا تفعل صلاحية "السحب" (Enable Withdrawals) أبداً للحفاظ على أمان أموالك.</span></li>
+                    <li>انسخ مفتاح الـ API (API Key) ومفتاح السري (Secret Key) الظاهرين لك.</li>
+                </ol>
+                <a href="https://www.binance.com/en/my/settings/api-management" target="_blank" class="block text-center mt-6 bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105">
+                    <i class="fas fa-external-link-alt ml-2"></i> اذهب إلى إدارة API في باينانس (يفتح في تبويب جديد)
+                </a>
             </div>
+            <form id="link-binance-form" class="space-y-6">
+                <div>
+                    <label for="api-key" class="block text-gray-300 text-sm font-bold mb-2">مفتاح API (API Key):</label>
+                    <input type="text" id="api-key" name="apiKey" class="shadow-inner appearance-none border border-gray-700 rounded-lg w-full py-3 px-4 text-gray-200 leading-tight focus:outline-none focus:ring-3 focus:ring-green-500 bg-gray-700 placeholder-gray-500" placeholder="الصق مفتاح API هنا" required>
+                </div>
+                <div>
+                    <label for="secret-key" class="block text-gray-300 text-sm font-bold mb-2">المفتاح السري (Secret Key):</label>
+                    <input type="password" id="secret-key" name="secretKey" class="shadow-inner appearance-none border border-gray-700 rounded-lg w-full py-3 px-4 text-gray-200 leading-tight focus:outline-none focus:ring-3 focus:ring-green-500 bg-gray-700 placeholder-gray-500" placeholder="الصق المفتاح السري هنا" required>
+                </div>
+                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-full w-full transition-all duration-300 transform hover:scale-105 shadow-lg">
+                    <i class="fas fa-link ml-2"></i> ربط الحساب الآن
+                </button>
+            </form>
+            <div id="link-binance-message" class="mt-6 text-center text-red-400 font-semibold"></div>
         </section>
 
         <!-- قسم لوحة التحكم (يظهر بعد تسجيل الدخول وربط الحساب) -->
-        <section id="dashboard-section" class="hidden p-4 bg-gray-800 rounded-lg shadow-xl">
-            <h2 class="text-2xl font-bold text-blue-400 mb-6">لوحة التحكم</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <section id="dashboard-section" class="hidden w-full p-6 bg-gray-800 rounded-xl shadow-2xl transition-all duration-500 ease-in-out">
+            <h2 class="text-3xl font-extrabold text-blue-400 mb-8">لوحة التحكم <span class="text-white text-xl font-light">نظرة عامة على محفظتك</span></h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-10">
                 <!-- بطاقة الرصيد الإجمالي -->
-                <div class="bg-gray-700 p-6 rounded-lg shadow-md text-center">
-                    <h3 class="text-gray-300 text-lg font-semibold mb-2">الرصيد الإجمالي (USDT)</h3>
-                    <p id="total-balance" class="text-4xl font-bold text-green-400">0.00 USDT</p>
+                <div class="bg-gray-700 p-8 rounded-lg shadow-xl text-center border-b-4 border-blue-500">
+                    <h3 class="text-gray-300 text-xl font-semibold mb-3">الرصيد الإجمالي (USDT)</h3>
+                    <p id="total-balance" class="text-5xl font-extrabold text-green-400">0.00 <span class="text-3xl font-normal">USDT</span></p>
+                    <p class="text-gray-400 text-sm mt-3">رصيدك الفعلي في باينانس</p>
                 </div>
                 <!-- بطاقة رصيد البيتكوين -->
-                <div class="bg-gray-700 p-6 rounded-lg shadow-md text-center">
-                    <h3 class="text-gray-300 text-lg font-semibold mb-2">رصيد البيتكوين (BTC)</h3>
-                    <p id="btc-balance" class="text-3xl font-bold text-yellow-400">0.00 BTC</p>
+                <div class="bg-gray-700 p-8 rounded-lg shadow-xl text-center border-b-4 border-yellow-500">
+                    <h3 class="text-gray-300 text-xl font-semibold mb-3">رصيد البيتكوين (BTC)</h3>
+                    <p id="btc-balance" class="text-4xl font-bold text-yellow-400">0.00 <span class="text-2xl font-normal">BTC</span></p>
+                    <p class="text-gray-400 text-sm mt-3">كمية البيتكوين المتوفرة لديك</p>
                 </div>
                 <!-- بطاقة رصيد الإيثيريوم -->
-                <div class="bg-gray-700 p-6 rounded-lg shadow-md text-center">
-                    <h3 class="text-gray-300 text-lg font-semibold mb-2">رصيد الإيثيريوم (ETH)</h3>
-                    <p id="eth-balance" class="text-3xl font-bold text-purple-400">0.00 ETH</p>
+                <div class="bg-gray-700 p-8 rounded-lg shadow-xl text-center border-b-4 border-purple-500">
+                    <h3 class="text-gray-300 text-xl font-semibold mb-3">رصيد الإيثيريوم (ETH)</h3>
+                    <p id="eth-balance" class="text-4xl font-bold text-purple-400">0.00 <span class="text-2xl font-normal">ETH</span></p>
+                    <p class="text-gray-400 text-sm mt-3">كمية الإيثيريوم المتوفرة لديك</p>
                 </div>
             </div>
 
             <!-- قسم آخر التداولات (سجل التداول) -->
-            <h3 class="text-xl font-bold text-gray-200 mb-4">آخر التداولات</h3>
-            <div class="overflow-x-auto bg-gray-700 rounded-lg shadow-md">
+            <h3 class="text-2xl font-bold text-gray-200 mb-6">آخر التداولات <span class="text-lg font-light text-gray-400">سجل عملياتك</span></h3>
+            <div class="overflow-x-auto bg-gray-700 rounded-lg shadow-xl">
                 <table class="min-w-full divide-y divide-gray-600">
                     <thead class="bg-gray-600">
                         <tr>
@@ -192,7 +200,6 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-red-400">بيع</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">0.1</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">2000 USDT</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">2025-07-13</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-green-400">مكتمل</td>
                         </tr>
                     </tbody>
@@ -201,118 +208,129 @@
         </section>
 
         <!-- قسم التداول (يظهر بعد تسجيل الدخول وربط الحساب) -->
-        <section id="trade-section" class="hidden p-4 bg-gray-800 rounded-lg shadow-xl">
-            <h2 class="text-2xl font-bold text-blue-400 mb-6">التداول</h2>
+        <section id="trade-section" class="hidden w-full p-6 bg-gray-800 rounded-xl shadow-2xl transition-all duration-500 ease-in-out">
+            <h2 class="text-3xl font-extrabold text-blue-400 mb-8">التداول الفوري <span class="text-white text-xl font-light">شراء وبيع العملات الرقمية</span></h2>
 
             <!-- أسعار العملات الحية -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8" id="market-prices">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10" id="market-prices">
                 <!-- بطاقة سعر البيتكوين -->
-                <div class="bg-gray-700 p-6 rounded-lg shadow-md">
-                    <div class="flex justify-between items-center mb-2">
-                        <h3 class="text-gray-300 text-lg font-semibold">BTC/USDT</h3>
-                        <span class="text-green-400 text-sm font-bold">+0.5%</span>
+                <div class="bg-gray-700 p-8 rounded-lg shadow-xl border-b-4 border-blue-500">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-gray-300 text-xl font-semibold">BTC/USDT</h3>
+                        <span class="text-green-400 text-base font-bold bg-green-900 px-3 py-1 rounded-full">+0.5%</span>
                     </div>
-                    <p id="btc-price" class="text-4xl font-bold text-white">0.00 USDT</p>
-                    <p class="text-gray-400 text-sm mt-1">سعر باينانس: <span id="btc-binance-price">0.00</span> USDT</p>
-                    <p class="text-gray-400 text-sm">عمولتك: <span id="btc-commission-rate">0.5</span>%</p>
+                    <p id="btc-price" class="text-5xl font-extrabold text-white">0.00 <span class="text-3xl font-normal">USDT</span></p>
+                    <p class="text-gray-400 text-sm mt-3">سعر باينانس الأصلي: <span id="btc-binance-price" class="font-semibold">0.00</span> USDT</p>
+                    <p class="text-gray-400 text-sm">عمولتك على هذا السعر: <span id="btc-commission-rate" class="font-semibold">0.5</span>%</p>
                 </div>
                 <!-- بطاقة سعر الإيثيريوم -->
-                <div class="bg-gray-700 p-6 rounded-lg shadow-md">
-                    <div class="flex justify-between items-center mb-2">
-                        <h3 class="text-gray-300 text-lg font-semibold">ETH/USDT</h3>
-                        <span class="text-red-400 text-sm font-bold">-0.2%</span>
+                <div class="bg-gray-700 p-8 rounded-lg shadow-xl border-b-4 border-purple-500">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-gray-300 text-xl font-semibold">ETH/USDT</h3>
+                        <span class="text-red-400 text-base font-bold bg-red-900 px-3 py-1 rounded-full">-0.2%</span>
                     </div>
-                    <p id="eth-price" class="text-4xl font-bold text-white">0.00 USDT</p>
-                    <p class="text-gray-400 text-sm mt-1">سعر باينانس: <span id="eth-binance-price">0.00</span> USDT</p>
-                    <p class="text-gray-400 text-sm">عمولتك: <span id="eth-commission-rate">0.5</span>%</p>
+                    <p id="eth-price" class="text-5xl font-extrabold text-white">0.00 <span class="text-3xl font-normal">USDT</span></p>
+                    <p class="text-gray-400 text-sm mt-3">سعر باينانس الأصلي: <span id="eth-binance-price" class="font-semibold">0.00</span> USDT</p>
+                    <p class="text-gray-400 text-sm">عمولتك على هذا السعر: <span id="eth-commission-rate" class="font-semibold">0.5</span>%</p>
                 </div>
             </div>
 
             <!-- واجهة الشراء والبيع -->
-            <div class="bg-gray-700 p-8 rounded-lg shadow-md">
-                <div class="flex justify-center mb-6">
-                    <button id="buy-tab" class="px-6 py-3 rounded-l-lg bg-blue-600 text-white font-bold transition-colors duration-300">شراء</button>
-                    <button id="sell-tab" class="px-6 py-3 rounded-r-lg bg-gray-600 text-gray-300 font-bold transition-colors duration-300">بيع</button>
+            <div class="bg-gray-700 p-8 rounded-xl shadow-xl">
+                <div class="flex justify-center mb-8">
+                    <button id="buy-tab" class="px-8 py-4 rounded-l-full bg-blue-600 text-white font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-md active-tab">
+                        <i class="fas fa-plus-circle ml-2"></i> شراء
+                    </button>
+                    <button id="sell-tab" class="px-8 py-4 rounded-r-full bg-gray-600 text-gray-300 font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-md">
+                        <i class="fas fa-minus-circle ml-2"></i> بيع
+                    </button>
                 </div>
 
                 <!-- نموذج الشراء -->
-                <form id="buy-form" class="space-y-4">
+                <form id="buy-form" class="space-y-6">
                     <div>
-                        <label for="buy-symbol" class="block text-gray-300 text-sm font-bold mb-2">العملة:</label>
-                        <select id="buy-symbol" class="shadow appearance-none border border-gray-600 rounded-md w-full py-3 px-4 text-gray-200 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-800">
-                            <option value="BTCUSDT">BTC/USDT</option>
-                            <option value="ETHUSDT">ETH/USDT</option>
+                        <label for="buy-symbol" class="block text-gray-300 text-sm font-bold mb-2">اختر العملة للشراء:</label>
+                        <select id="buy-symbol" class="shadow-inner appearance-none border border-gray-600 rounded-lg w-full py-3 px-4 text-gray-200 leading-tight focus:outline-none focus:ring-3 focus:ring-blue-500 bg-gray-800">
+                            <option value="BTCUSDT">البيتكوين (BTC/USDT)</option>
+                            <option value="ETHUSDT">الإيثيريوم (ETH/USDT)</option>
                         </select>
                     </div>
                     <div>
-                        <label for="buy-quantity" class="block text-gray-300 text-sm font-bold mb-2">الكمية:</label>
-                        <input type="number" id="buy-quantity" name="quantity" step="any" class="shadow appearance-none border border-gray-600 rounded-md w-full py-3 px-4 text-gray-200 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-800" placeholder="أدخل الكمية" required>
+                        <label for="buy-quantity" class="block text-gray-300 text-sm font-bold mb-2">الكمية التي ترغب بشرائها:</label>
+                        <input type="number" id="buy-quantity" name="quantity" step="any" class="shadow-inner appearance-none border border-gray-600 rounded-lg w-full py-3 px-4 text-gray-200 leading-tight focus:outline-none focus:ring-3 focus:ring-blue-500 bg-gray-800 placeholder-gray-500" placeholder="أدخل الكمية" required>
                     </div>
-                    <p class="text-gray-400 text-sm">السعر التقديري: <span id="buy-estimated-price" class="font-semibold">0.00</span> USDT</p>
-                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-md w-full transition-colors duration-300 transform hover:scale-105">شراء</button>
-                    <div id="buy-message" class="mt-4 text-center text-red-400"></div>
+                    <p class="text-gray-400 text-base">السعر التقديري للشراء (شامل عمولتك): <span id="buy-estimated-price" class="font-extrabold text-white">0.00</span> USDT</p>
+                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-full w-full transition-all duration-300 transform hover:scale-105 shadow-lg">
+                        <i class="fas fa-arrow-circle-up ml-2"></i> تأكيد الشراء
+                    </button>
+                    <div id="buy-message" class="mt-4 text-center text-red-400 font-semibold"></div>
                 </form>
 
                 <!-- نموذج البيع (مخفي مبدئياً) -->
-                <form id="sell-form" class="hidden space-y-4">
+                <form id="sell-form" class="hidden space-y-6">
                     <div>
-                        <label for="sell-symbol" class="block text-gray-300 text-sm font-bold mb-2">العملة:</label>
-                        <select id="sell-symbol" class="shadow appearance-none border border-gray-600 rounded-md w-full py-3 px-4 text-gray-200 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-800">
-                            <option value="BTCUSDT">BTC/USDT</option>
-                            <option value="ETHUSDT">ETH/USDT</option>
+                        <label for="sell-symbol" class="block text-gray-300 text-sm font-bold mb-2">اختر العملة للبيع:</label>
+                        <select id="sell-symbol" class="shadow-inner appearance-none border border-gray-600 rounded-lg w-full py-3 px-4 text-gray-200 leading-tight focus:outline-none focus:ring-3 focus:ring-red-500 bg-gray-800">
+                            <option value="BTCUSDT">البيتكوين (BTC/USDT)</option>
+                            <option value="ETHUSDT">الإيثيريوم (ETH/USDT)</option>
                         </select>
                     </div>
                     <div>
-                        <label for="sell-quantity" class="block text-gray-300 text-sm font-bold mb-2">الكمية:</label>
-                        <input type="number" id="sell-quantity" name="quantity" step="any" class="shadow appearance-none border border-gray-600 rounded-md w-full py-3 px-4 text-gray-200 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-800" placeholder="أدخل الكمية" required>
+                        <label for="sell-quantity" class="block text-gray-300 text-sm font-bold mb-2">الكمية التي ترغب ببيعها:</label>
+                        <input type="number" id="sell-quantity" name="quantity" step="any" class="shadow-inner appearance-none border border-gray-600 rounded-lg w-full py-3 px-4 text-gray-200 leading-tight focus:outline-none focus:ring-3 focus:ring-red-500 bg-gray-800 placeholder-gray-500" placeholder="أدخل الكمية" required>
                     </div>
-                    <p class="text-gray-400 text-sm">السعر التقديري: <span id="sell-estimated-price" class="font-semibold">0.00</span> USDT</p>
-                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-md w-full transition-colors duration-300 transform hover:scale-105">بيع</button>
-                    <div id="sell-message" class="mt-4 text-center text-red-400"></div>
+                    <p class="text-gray-400 text-base">السعر التقديري للبيع (شامل عمولتك): <span id="sell-estimated-price" class="font-extrabold text-white">0.00</span> USDT</p>
+                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-full w-full transition-all duration-300 transform hover:scale-105 shadow-lg">
+                        <i class="fas fa-arrow-circle-down ml-2"></i> تأكيد البيع
+                    </button>
+                    <div id="sell-message" class="mt-4 text-center text-red-400 font-semibold"></div>
                 </form>
             </div>
         </section>
 
         <!-- قسم الإيداع والسحب (يظهر بعد تسجيل الدخول وربط الحساب) -->
-        <section id="deposit-withdraw-section" class="hidden p-4 bg-gray-800 rounded-lg shadow-xl">
-            <h2 class="text-2xl font-bold text-blue-400 mb-6">إيداع وسحب الأموال</h2>
-            <div class="space-y-6">
-                <!-- قسم الإيداع -->
-                <div class="bg-gray-700 p-6 rounded-lg shadow-md">
+        <section id="deposit-withdraw-section" class="hidden w-full max-w-2xl p-6 bg-gray-800 rounded-xl shadow-2xl transition-all duration-500 ease-in-out">
+            <h2 class="text-3xl font-extrabold text-blue-400 mb-8">إدارة الأموال <span class="text-white text-xl font-light">إيداع وسحب آمن</span></h2>
+            <p class="text-gray-300 mb-6 text-center text-lg">
+                لضمان أعلى مستويات الأمان والشفافية، تتم عمليات الإيداع والسحب مباشرة من حسابك في باينانس.
+                <br>
+                <span class="font-bold text-yellow-400">منصتنا توفر لك واجهة سهلة للوصول إلى هذه العمليات.</span>
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- بطاقة الإيداع -->
+                <div class="bg-gray-700 p-8 rounded-lg shadow-xl text-center border-b-4 border-green-500">
                     <h3 class="text-xl font-semibold text-gray-200 mb-4">إيداع الأموال</h3>
-                    <p class="text-gray-300 mb-4">
-                        لإيداع الأموال في حساب التداول الخاص بك، يرجى إرسال العملات المشفرة (مثل USDT) إلى عنوان محفظتك في باينانس.
-                        <br>
-                        <span class="font-bold text-yellow-400">ملاحظة هامة:</span> أموالك تبقى آمنة في حسابك الخاص على باينانس.
+                    <p class="text-gray-300 mb-6">
+                        لإضافة الأموال إلى رصيدك، يرجى استخدام صفحة الإيداع في باينانس. سيظهر رصيدك المحدث هنا تلقائياً.
                     </p>
-                    <a href="https://www.binance.com/en/my/wallet/deposit/crypto" target="_blank" class="block text-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-md transition-colors duration-300 transform hover:scale-105">
+                    <a href="https://www.binance.com/en/my/wallet/deposit/crypto" target="_blank" class="block bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105">
                         <i class="fas fa-wallet ml-2"></i> اذهب إلى صفحة الإيداع في باينانس
                     </a>
-                    <p class="text-gray-400 text-sm mt-4 text-center">بعد الإيداع في باينانس، ستظهر أموالك هنا تلقائياً.</p>
+                    <p class="text-gray-400 text-sm mt-4">نحن لا نحتفظ بأموالك، بل تبقى في حسابك الآمن في باينانس.</p>
                 </div>
 
-                <!-- قسم السحب -->
-                <div class="bg-gray-700 p-6 rounded-lg shadow-md">
+                <!-- بطاقة السحب -->
+                <div class="bg-gray-700 p-8 rounded-lg shadow-xl text-center border-b-4 border-red-500">
                     <h3 class="text-xl font-semibold text-gray-200 mb-4">سحب الأموال</h3>
-                    <p class="text-gray-300 mb-4">
-                        لسحب الأموال من حساب التداول الخاص بك، يرجى سحبها مباشرة من حسابك في باينانس.
-                        <br>
-                        <span class="font-bold text-yellow-400">تنبيه:</span> تأكد من أنك تسحب إلى عنوان محفظة صحيح.
+                    <p class="text-gray-300 mb-6">
+                        لسحب أرباحك أو أي جزء من رصيدك، يرجى استخدام صفحة السحب في باينانس.
                     </p>
-                    <a href="https://www.binance.com/en/my/wallet/withdraw/crypto" target="_blank" class="block text-center bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-md transition-colors duration-300 transform hover:scale-105">
+                    <a href="https://www.binance.com/en/my/wallet/withdraw/crypto" target="_blank" class="block bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105">
                         <i class="fas fa-arrow-alt-circle-up ml-2"></i> اذهب إلى صفحة السحب في باينانس
                     </a>
+                    <p class="text-gray-400 text-sm mt-4">عمليات السحب تتم بأمان تام عبر باينانس.</p>
                 </div>
             </div>
         </section>
     </main>
 
     <!-- تذييل الصفحة (Footer) -->
-    <footer class="bg-gray-800 p-4 text-center text-gray-400 text-sm mt-8 shadow-inner">
+    <footer class="bg-gray-800 p-6 text-center text-gray-400 text-sm mt-12 shadow-inner">
         <p>&copy; 2025 بوابة التداول الشخصية. جميع الحقوق محفوظة.</p>
+        <p class="mt-2">تداول بذكاء، تداول بأمان.</p>
     </footer>
 
-    <!-- ربط ملف JavaScript الخاص بنا (سيكون في الخطوة التالية) -->
+    <!-- ربط ملف JavaScript الخاص بنا (هذا هو الجزء الذي سيجعل كل شيء يعمل) -->
     <script src="script.js"></script>
 </body>
 </html>
