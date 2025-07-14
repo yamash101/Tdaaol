@@ -1,0 +1,115 @@
+/* ملف style.css */
+
+/* استيراد خطوط جوجل إذا لم يتم استيرادها في HTML */
+/* @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap'); */
+/* @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap'); */
+
+/* تخصيص الخطوط الأساسية */
+body {
+    /* يمكنك استخدام خط عربي هنا مثل 'Cairo', 'Noto Sans Arabic', sans-serif */
+    font-family: 'Inter', sans-serif;
+    direction: rtl; /* لضمان اتجاه النص من اليمين لليسار */
+    text-align: right; /* لمحاذاة النص لليمين بشكل افتراضي */
+}
+
+/* تأثيرات الانتقال للأزرار والعناصر التفاعلية */
+.transition-colors {
+    transition-property: background-color, border-color, color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+}
+
+.transform {
+    transform: var(--tw-transform);
+}
+
+.hover\:scale-105:hover {
+    --tw-scale-x: 1.05;
+    --tw-scale-y: 1.05;
+    transform: var(--tw-transform);
+}
+
+/* تخصيص أزرار التبويبات (شراء/بيع) */
+#buy-tab, #sell-tab {
+    border: none;
+    cursor: pointer;
+    outline: none;
+    font-size: 1rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem; /* لجعل الزوايا مستديرة */
+}
+
+#buy-tab.active {
+    background-color: #2563eb; /* أزرق داكن */
+    color: white;
+}
+
+#sell-tab.active {
+    background-color: #dc2626; /* أحمر داكن */
+    color: white;
+}
+
+/* تأثيرات الظل الفخمة */
+.shadow-xl {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+}
+
+/* تخصيص حقول الإدخال والاختيار */
+input[type="text"],
+input[type="password"],
+input[type="number"],
+select {
+    background-color: #2d3748; /* خلفية أغمق قليلاً */
+    border-color: #4a5568; /* حدود أغمق */
+    color: #e2e8f0; /* لون نص فاتح */
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+select:focus {
+    border-color: #3b82f6; /* لون حدود التركيز */
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5); /* ظل التركيز */
+}
+
+/* تخصيص الجداول */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 12px 24px;
+    text-align: right;
+    border-bottom: 1px solid #4a5568; /* حدود أغمق */
+}
+
+thead th {
+    background-color: #2d3748; /* خلفية رأس الجدول */
+    color: #e2e8f0; /* لون نص رأس الجدول */
+    font-weight: 600;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #2d3748; /* لون خلفية الصفوف الزوجية */
+}
+
+tbody tr:hover {
+    background-color: #3b4552; /* لون خلفية الصف عند التحويم */
+}
+
+/* تخصيص الأيقونات */
+.fas {
+    /* يمكنك إضافة تأثيرات للأيقونات هنا إذا أردت */
+}
+
+/* إخفاء العناصر */
+.hidden {
+    display: none !important;
+}
+
+/* لجعل الأقسام تملأ الارتفاع المتاح في flex container */
+.h-full {
+    height: 100%;
+}
+
