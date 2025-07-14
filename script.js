@@ -1,4 +1,10 @@
-// ملف script.js - يجعل الواجهة الأمامية تفاعلية
+// ملف script.js - يجعل الواجهة الأمامية تفاعلية ومتصلة بالواجهة الخلفية
+
+// ----------------------------------------------------
+// تعريف رابط الواجهة الخلفية (Backend URL)
+// ----------------------------------------------------
+// هذا هو رابط مشروعك على Replit الذي يعمل كواجهة خلفية
+const BACKEND_URL = 'https://44aebd2c-02d2-4e25-ab92-74acf0abffd1-00-2wmwwoslz97i7.picard.replit.dev';
 
 // ----------------------------------------------------
 // تعريف العناصر الرئيسية في الواجهة الأمامية
@@ -24,16 +30,30 @@ const navLinks = document.querySelectorAll('.nav-link'); // جميع روابط 
 const logoutButtons = document.querySelectorAll('#logout-button, #mobile-logout-button');
 
 const buyTab = document.getElementById('buy-tab');
-const sellTab = document.getElementById('sell-tab');
+const sellTab = document = document.getElementById('sell-tab');
 const buyForm = document.getElementById('buy-form');
 const sellForm = document.getElementById('sell-form');
+
+const btcPriceElement = document.getElementById('btc-price');
+const btcBinancePriceElement = document.getElementById('btc-binance-price');
+const btcCommissionRateElement = document.getElementById('btc-commission-rate');
+const ethPriceElement = document.getElementById('eth-price');
+const ethBinancePriceElement = document.getElementById('eth-binance-price');
+const ethCommissionRateElement = document.getElementById('eth-commission-rate');
+
+const totalBalanceElement = document.getElementById('total-balance');
+const btcBalanceElement = document.getElementById('btc-balance');
+const ethBalanceElement = document.getElementById('eth-balance');
+
 
 // ----------------------------------------------------
 // متغيرات الحالة (لإدارة حالة المستخدم في الواجهة الأمامية)
 // ----------------------------------------------------
 let isLoggedIn = false; // هل المستخدم مسجل دخول؟
 let isBinanceLinked = false; // هل حساب باينانس مرتبط؟
-let currentUsername = null; // اسم المستخدم الحالي
+let currentUsername = localStorage.getItem('currentUsername'); // محاولة جلب اسم المستخدم من التخزين المحلي
+let authToken = localStorage.getItem('authToken'); // محاولة جلب التوكن من التخزين المحلي (للتوثيق لاحقاً)
+
 
 // ----------------------------------------------------
 // دوال عرض الأقسام وإخفائها
@@ -56,7 +76,7 @@ function showSection(sectionId) {
 }
 
 // دالة لتحديث حالة واجهة المستخدم بناءً على حالة تسجيل الدخول وربط باينانس
-function updateUI() {
+async function updateUI() {
     // إخفاء جميع الأقسام في البداية
     hideAllSections();
 
@@ -78,6 +98,9 @@ function updateUI() {
     } else {
         // إذا سجل دخول وربط باينانس، أظهر لوحة التحكم افتراضياً
         showSection('dashboard-section');
+        // جلب وتحديث البيانات الحقيقية بمجرد ظهور لوحة التحكم
+        fetchAndDisplayPrices();
+        fetchAndDisplayBalance();
     }
 }
 
@@ -112,25 +135,23 @@ authForm.addEventListener('submit', async (e) => {
     let errorMessage = '';
 
     if (authSubmitButton.textContent.includes('تسجيل الدخول')) {
-        endpoint = '/api/user/login';
+        endpoint = `${BACKEND_URL}/api/user/login`;
         successMessage = 'تم تسجيل الدخول بنجاح!';
         errorMessage = 'فشل تسجيل الدخول. تحقق من اسم المستخدم وكلمة المرور.';
     } else {
-        endpoint = '/api/user/register';
+        endpoint = `${BACKEND_URL}/api/user/register`;
         successMessage = 'تم تسجيل حساب جديد بنجاح! يمكنك الآن تسجيل الدخول.';
         errorMessage = 'فشل التسجيل. ربما اسم المستخدم موجود بالفعل.';
     }
 
     try {
-        // هنا سيتم استدعاء الواجهة الخلفية (Replit Server)
-        // حالياً، سنقوم بمحاكاة الاستجابة
-        const response = await new Promise(resolve => setTimeout(() => {
-            if (username && password) { // محاكاة نجاح بسيط
-                resolve({ ok: true, status: 200, json: () => Promise.resolve({ message: successMessage, user: { username } }) });
-            } else {
-                resolve({ ok: false, status: 400, json: () => Promise.resolve({ message: errorMessage }) });
-            }
-        }, 1000)); // تأخير 1 ثانية للمحاكاة
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
+        });
 
         const data = await response.json();
 
@@ -140,8 +161,13 @@ authForm.addEventListener('submit', async (e) => {
             authMessage.classList.add('text-green-400');
             isLoggedIn = true;
             currentUsername = username; // حفظ اسم المستخدم
-            // في مشروع حقيقي: تحقق مما إذا كان المستخدم قد ربط باينانس بالفعل من الخادم
-            isBinanceLinked = false; // نفترض أنه لم يربط بعد لغرض الاختبار الأولي
+            localStorage.setItem('currentUsername', username); // حفظ في التخزين المحلي
+            // في مشروع حقيقي: هنا ستستقبل التوكن وتحفظه
+            // authToken = data.token;
+            // localStorage.setItem('authToken', authToken);
+
+            // بعد تسجيل الدخول/التسجيل، تحقق مما إذا كان حساب باينانس مرتبطاً
+            await checkBinanceLinkStatus();
             setTimeout(updateUI, 1500); // تحديث الواجهة بعد فترة قصيرة
         } else {
             authMessage.textContent = data.message;
@@ -156,6 +182,24 @@ authForm.addEventListener('submit', async (e) => {
     }
 });
 
+// دالة للتحقق من حالة ربط حساب باينانس
+async function checkBinanceLinkStatus() {
+    if (!currentUsername) {
+        isBinanceLinked = false;
+        return;
+    }
+    try {
+        // هنا نستدعي نقطة نهاية جديدة في الواجهة الخلفية للتحقق
+        // هذه النقطة ستتحقق مما إذا كان لدى المستخدم مفاتيح API مخزنة
+        const response = await fetch(`${BACKEND_URL}/api/user/check-binance-link/${currentUsername}`);
+        const data = await response.json();
+        isBinanceLinked = data.isLinked;
+    } catch (error) {
+        console.error('Error checking Binance link status:', error);
+        isBinanceLinked = false;
+    }
+}
+
 // ----------------------------------------------------
 // معالجة أحداث ربط حساب باينانس
 // ----------------------------------------------------
@@ -167,15 +211,14 @@ linkBinanceForm.addEventListener('submit', async (e) => {
     linkBinanceMessage.textContent = 'جاري ربط حساب باينانس...';
 
     try {
-        // هنا سيتم استدعاء الواجهة الخلفية (Replit Server)
-        // حالياً، سنقوم بمحاكاة الاستجابة
-        const response = await new Promise(resolve => setTimeout(() => {
-            if (apiKey && secretKey) { // محاكاة نجاح بسيط
-                resolve({ ok: true, status: 200, json: () => Promise.resolve({ message: 'تم ربط حساب باينانس بنجاح!' }) });
-            } else {
-                resolve({ ok: false, status: 400, json: () => Promise.resolve({ message: 'الرجاء إدخال مفتاح API والمفتاح السري.' }) });
-            }
-        }, 1000));
+        const response = await fetch(`${BACKEND_URL}/api/user/link-binance`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+                // 'Authorization': `Bearer ${authToken}` // للتوثيق لاحقاً
+            },
+            body: JSON.stringify({ username: currentUsername, apiKey, secretKey })
+        });
 
         const data = await response.json();
 
@@ -223,6 +266,8 @@ logoutButtons.forEach(button => {
         isLoggedIn = false;
         isBinanceLinked = false;
         currentUsername = null;
+        localStorage.removeItem('currentUsername'); // مسح من التخزين المحلي
+        localStorage.removeItem('authToken'); // مسح التوكن
         updateUI(); // تحديث الواجهة للعودة إلى صفحة تسجيل الدخول
         authMessage.textContent = 'تم تسجيل الخروج بنجاح.';
         authMessage.classList.remove('text-green-400');
@@ -265,15 +310,14 @@ buyForm.addEventListener('submit', async (e) => {
     messageElement.textContent = 'جاري تنفيذ أمر الشراء...';
 
     try {
-        // هنا سيتم استدعاء الواجهة الخلفية (Replit Server) لتنفيذ أمر الشراء
-        // حالياً، سنقوم بمحاكاة الاستجابة
-        const response = await new Promise(resolve => setTimeout(() => {
-            if (parseFloat(quantity) > 0) {
-                resolve({ ok: true, status: 200, json: () => Promise.resolve({ message: `تم شراء ${quantity} ${symbol} بنجاح!` }) });
-            } else {
-                resolve({ ok: false, status: 400, json: () => Promise.resolve({ message: 'الكمية غير صالحة.' }) });
-            }
-        }, 1500));
+        const response = await fetch(`${BACKEND_URL}/api/trade/order`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+                // 'Authorization': `Bearer ${authToken}` // للتوثيق لاحقاً
+            },
+            body: JSON.stringify({ username: currentUsername, symbol, side: 'BUY', quantity: parseFloat(quantity) })
+        });
 
         const data = await response.json();
 
@@ -281,7 +325,8 @@ buyForm.addEventListener('submit', async (e) => {
             messageElement.textContent = data.message;
             messageElement.classList.remove('text-red-400');
             messageElement.classList.add('text-green-400');
-            // هنا يمكنك تحديث الأرصدة المعروضة (سنقوم بذلك فعلياً لاحقاً)
+            // تحديث الأرصدة بعد التداول
+            fetchAndDisplayBalance();
         } else {
             messageElement.textContent = data.message;
             messageElement.classList.remove('text-green-400');
@@ -305,15 +350,14 @@ sellForm.addEventListener('submit', async (e) => {
     messageElement.textContent = 'جاري تنفيذ أمر البيع...';
 
     try {
-        // هنا سيتم استدعاء الواجهة الخلفية (Replit Server) لتنفيذ أمر البيع
-        // حالياً، سنقوم بمحاكاة الاستجابة
-        const response = await new Promise(resolve => setTimeout(() => {
-            if (parseFloat(quantity) > 0) {
-                resolve({ ok: true, status: 200, json: () => Promise.resolve({ message: `تم بيع ${quantity} ${symbol} بنجاح!` }) });
-            } else {
-                resolve({ ok: false, status: 400, json: () => Promise.resolve({ message: 'الكمية غير صالحة.' }) });
-            }
-        }, 1500));
+        const response = await fetch(`${BACKEND_URL}/api/trade/order`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+                // 'Authorization': `Bearer ${authToken}` // للتوثيق لاحقاً
+            },
+            body: JSON.stringify({ username: currentUsername, symbol, side: 'SELL', quantity: parseFloat(quantity) })
+        });
 
         const data = await response.json();
 
@@ -321,7 +365,8 @@ sellForm.addEventListener('submit', async (e) => {
             messageElement.textContent = data.message;
             messageElement.classList.remove('text-red-400');
             messageElement.classList.add('text-green-400');
-            // هنا يمكنك تحديث الأرصدة المعروضة (سنقوم بذلك فعلياً لاحقاً)
+            // تحديث الأرصدة بعد التداول
+            fetchAndDisplayBalance();
         } else {
             messageElement.textContent = data.message;
             messageElement.classList.remove('text-green-400');
@@ -336,38 +381,66 @@ sellForm.addEventListener('submit', async (e) => {
 });
 
 // ----------------------------------------------------
-// وظائف إضافية (جلب الأسعار والأرصدة - سيتم ربطها بالخادم لاحقاً)
+// وظائف جلب الأسعار والأرصدة (متصلة بالخادم الآن)
 // ----------------------------------------------------
 
-// دالة لجلب وتحديث أسعار العملات (محاكاة حالياً)
+// دالة لجلب وتحديث أسعار العملات الحقيقية من الواجهة الخلفية
 async function fetchAndDisplayPrices() {
-    // هنا سيتم استدعاء الواجهة الخلفية: fetch('/api/market/prices')
-    // حالياً، سنقوم بمحاكاة البيانات
-    const prices = [
-        { symbol: 'BTCUSDT', binancePrice: 30000, yourPrice: 30150, commissionRate: 0.5 },
-        { symbol: 'ETHUSDT', binancePrice: 2000, yourPrice: 2010, commissionRate: 0.5 }
-    ];
+    try {
+        const response = await fetch(`${BACKEND_URL}/api/market/prices`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const prices = await response.json();
 
-    document.getElementById('btc-price').innerHTML = `${prices[0].yourPrice.toFixed(2)} <span class="text-3xl font-normal">USDT</span>`;
-    document.getElementById('btc-binance-price').textContent = prices[0].binancePrice.toFixed(2);
-    document.getElementById('btc-commission-rate').textContent = prices[0].commissionRate;
+        const btcPriceData = prices.find(p => p.symbol === 'BTCUSDT');
+        const ethPriceData = prices.find(p => p.symbol === 'ETHUSDT');
 
-    document.getElementById('eth-price').innerHTML = `${prices[1].yourPrice.toFixed(2)} <span class="text-3xl font-normal">USDT</span>`;
-    document.getElementById('eth-binance-price').textContent = prices[1].binancePrice.toFixed(2);
-    document.getElementById('eth-commission-rate').textContent = prices[1].commissionRate;
+        if (btcPriceData) {
+            btcPriceElement.innerHTML = `${parseFloat(btcPriceData.yourPrice).toFixed(2)} <span class="text-3xl font-normal">USDT</span>`;
+            btcBinancePriceElement.textContent = parseFloat(btcPriceData.binancePrice).toFixed(2);
+            btcCommissionRateElement.textContent = btcPriceData.commissionRate;
+        }
+        if (ethPriceData) {
+            ethPriceElement.innerHTML = `${parseFloat(ethPriceData.yourPrice).toFixed(2)} <span class="text-3xl font-normal">USDT</span>`;
+            ethBinancePriceElement.textContent = parseFloat(ethPriceData.binancePrice).toFixed(2);
+            ethCommissionRateElement.textContent = ethPriceData.commissionRate;
+        }
 
-    // تحديث السعر التقديري في نماذج الشراء والبيع
-    document.getElementById('buy-symbol').addEventListener('change', updateEstimatedPrice);
-    document.getElementById('buy-quantity').addEventListener('input', updateEstimatedPrice);
-    document.getElementById('sell-symbol').addEventListener('change', updateEstimatedPrice);
-    document.getElementById('sell-quantity').addEventListener('input', updateEstimatedPrice);
-    updateEstimatedPrice(); // تحديث مبدئي
+        updateEstimatedPrice(); // تحديث السعر التقديري بعد جلب الأسعار
+    } catch (error) {
+        console.error('Error fetching prices:', error);
+        // يمكنك عرض رسالة خطأ للمستخدم هنا
+    }
+}
+
+// دالة لجلب وتحديث أرصدة المستخدم الحقيقية من الواجهة الخلفية
+async function fetchAndDisplayBalance() {
+    if (!isLoggedIn || !currentUsername) return; // لا تجلب الرصيد إذا لم يكن المستخدم مسجلاً
+
+    try {
+        const response = await fetch(`${BACKEND_URL}/api/user/binance-balance/${currentUsername}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        const balance = data.balance; // هذا سيعود بالرصيد الداخلي حاليا
+
+        if (balance) {
+            totalBalanceElement.innerHTML = `${balance.USDT.toFixed(2)} <span class="text-3xl font-normal">USDT</span>`;
+            btcBalanceElement.innerHTML = `${balance.BTC.toFixed(2)} <span class="text-2xl font-normal">BTC</span>`;
+            ethBalanceElement.innerHTML = `${balance.ETH.toFixed(2)} <span class="text-2xl font-normal">ETH</span>`;
+        }
+    } catch (error) {
+        console.error('Error fetching balance:', error);
+        // يمكنك عرض رسالة خطأ للمستخدم هنا
+    }
 }
 
 // دالة لتحديث السعر التقديري في نماذج الشراء والبيع
 function updateEstimatedPrice() {
-    const btcPrice = parseFloat(document.getElementById('btc-price').textContent.split(' ')[0]);
-    const ethPrice = parseFloat(document.getElementById('eth-price').textContent.split(' ')[0]);
+    const btcPrice = parseFloat(btcPriceElement.textContent.split(' ')[0]);
+    const ethPrice = parseFloat(ethPriceElement.textContent.split(' ')[0]);
 
     // نموذج الشراء
     const buySymbol = document.getElementById('buy-symbol').value;
@@ -393,27 +466,25 @@ function updateEstimatedPrice() {
 }
 
 
-// دالة لجلب وتحديث أرصدة المستخدم (محاكاة حالياً)
-async function fetchAndDisplayBalance() {
-    // هنا سيتم استدعاء الواجهة الخلفية: fetch(`/api/user/binance-balance/${currentUsername}`)
-    // حالياً، سنقوم بمحاكاة البيانات
-    const balance = { USDT: 5000.00, BTC: 0.05, ETH: 1.2 }; // أرصدة وهمية
-
-    document.getElementById('total-balance').innerHTML = `${balance.USDT.toFixed(2)} <span class="text-3xl font-normal">USDT</span>`;
-    document.getElementById('btc-balance').innerHTML = `${balance.BTC.toFixed(2)} <span class="text-2xl font-normal">BTC</span>`;
-    document.getElementById('eth-balance').innerHTML = `${balance.ETH.toFixed(2)} <span class="text-2xl font-normal">ETH</span>`;
-}
-
 // ----------------------------------------------------
 // تهيئة الواجهة عند تحميل الصفحة
 // ----------------------------------------------------
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // التحقق من حالة تسجيل الدخول وربط باينانس عند تحميل الصفحة
+    if (currentUsername) {
+        isLoggedIn = true;
+        await checkBinanceLinkStatus(); // تحقق من ربط باينانس بناءً على اسم المستخدم
+    }
     updateUI(); // تحديث الواجهة بناءً على الحالة الأولية
-    fetchAndDisplayPrices(); // جلب وعرض الأسعار مبدئياً
-    fetchAndDisplayBalance(); // جلب وعرض الأرصدة مبدئياً
 
     // تحديث الأسعار والأرصدة كل 10 ثوانٍ (لإعطاء إحساس بالوقت الفعلي)
     setInterval(fetchAndDisplayPrices, 10000);
     setInterval(fetchAndDisplayBalance, 10000);
+
+    // تحديث السعر التقديري عند تغيير الكمية أو العملة
+    document.getElementById('buy-symbol').addEventListener('change', updateEstimatedPrice);
+    document.getElementById('buy-quantity').addEventListener('input', updateEstimatedPrice);
+    document.getElementById('sell-symbol').addEventListener('change', updateEstimatedPrice);
+    document.getElementById('sell-quantity').addEventListener('input', updateEstimatedPrice);
 });
 
