@@ -1,57 +1,59 @@
-/* ملف style.css */
+/* ملف style.css - تصميمات إضافية لجعل الواجهة أفخم وأكثر جاوبية */
 
-/* استيراد خطوط جوجل إذا لم يتم استيرادها في HTML */
+/* استيراد خطوط جوجل (يمكنك تفعيلها هنا إذا لم تكن في HTML) */
 /* @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap'); */
 /* @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap'); */
 
 /* تخصيص الخطوط الأساسية */
 body {
-    /* يمكنك استخدام خط عربي هنا مثل 'Cairo', 'Noto Sans Arabic', sans-serif */
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', sans-serif; /* يمكن استخدام 'Cairo', 'Noto Sans Arabic' لخط عربي أفضل */
     direction: rtl; /* لضمان اتجاه النص من اليمين لليسار */
     text-align: right; /* لمحاذاة النص لليمين بشكل افتراضي */
 }
 
-/* تأثيرات الانتقال للأزرار والعناصر التفاعلية */
-.transition-colors {
-    transition-property: background-color, border-color, color, fill, stroke;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 150ms;
+/* تخصيص شريط التمرير (Scrollbar) لجعل الواجهة أفخم */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #1a202c; /* لون خلفية شريط التمرير (أغمق) */
+}
+::-webkit-scrollbar-thumb {
+    background: #4a5568; /* لون مقبض شريط التمرير */
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #6b7280; /* لون مقبض شريط التمرير عند التحويم */
 }
 
-.transform {
-    transform: var(--tw-transform);
-}
+/* تأثيرات الانتقال للأزرار والعناصر التفاعلية (مدمجة مع Tailwind) */
+/* .transition-all */
+/* .transform */
+/* .hover\:scale-105:hover */
 
-.hover\:scale-105:hover {
-    --tw-scale-x: 1.05;
-    --tw-scale-y: 1.05;
-    transform: var(--tw-transform);
-}
-
-/* تخصيص أزرار التبويبات (شراء/بيع) */
+/* تخصيص أزرار التبويبات (شراء/بيع) لجعلها تبدو كأزرار حقيقية وتفاعلية */
 #buy-tab, #sell-tab {
     border: none;
     cursor: pointer;
     outline: none;
-    font-size: 1rem;
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.5rem; /* لجعل الزوايا مستديرة */
+    font-size: 1.125rem; /* text-lg */
+    padding: 1rem 2rem; /* py-4 px-8 */
+    border-radius: 9999px; /* rounded-full */
+    white-space: nowrap; /* منع النص من الالتفاف */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* ظل خفيف */
 }
 
-#buy-tab.active {
+/* حالة التبويب النشط */
+#buy-tab.active-tab {
     background-color: #2563eb; /* أزرق داكن */
     color: white;
+    box-shadow: 0 8px 15px rgba(37, 99, 235, 0.4); /* ظل أزرق أعمق */
 }
 
-#sell-tab.active {
+#sell-tab.active-tab {
     background-color: #dc2626; /* أحمر داكن */
     color: white;
-}
-
-/* تأثيرات الظل الفخمة */
-.shadow-xl {
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 15px rgba(220, 38, 38, 0.4); /* ظل أحمر أعمق */
 }
 
 /* تخصيص حقول الإدخال والاختيار */
@@ -62,6 +64,9 @@ select {
     background-color: #2d3748; /* خلفية أغمق قليلاً */
     border-color: #4a5568; /* حدود أغمق */
     color: #e2e8f0; /* لون نص فاتح */
+    padding: 0.75rem 1rem; /* py-3 px-4 */
+    border-radius: 0.5rem; /* rounded-lg */
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3); /* ظل داخلي */
 }
 
 input[type="text"]:focus,
@@ -79,7 +84,7 @@ table {
 }
 
 th, td {
-    padding: 12px 24px;
+    padding: 1rem 1.5rem; /* px-6 py-4 */
     text-align: right;
     border-bottom: 1px solid #4a5568; /* حدود أغمق */
 }
@@ -98,12 +103,7 @@ tbody tr:hover {
     background-color: #3b4552; /* لون خلفية الصف عند التحويم */
 }
 
-/* تخصيص الأيقونات */
-.fas {
-    /* يمكنك إضافة تأثيرات للأيقونات هنا إذا أردت */
-}
-
-/* إخفاء العناصر */
+/* إخفاء العناصر (مهم لـ JavaScript) */
 .hidden {
     display: none !important;
 }
@@ -111,5 +111,32 @@ tbody tr:hover {
 /* لجعل الأقسام تملأ الارتفاع المتاح في flex container */
 .h-full {
     height: 100%;
+}
+
+/* تخصيص خاص لقائمة الجوال المنبثقة */
+#mobile-menu {
+    top: 64px; /* ارتفاع رأس الصفحة */
+    left: 0;
+    right: 0;
+    transform: translateY(-100%); /* إخفاء القائمة للأعلى */
+    opacity: 0;
+    pointer-events: none; /* منع التفاعل عندما تكون مخفية */
+}
+
+#mobile-menu.active {
+    transform: translateY(0%); /* إظهار القائمة */
+    opacity: 1;
+    pointer-events: auto; /* السماح بالتفاعل */
+}
+
+/* تخصيص الأزرار ذات الظل */
+.shadow-lg {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+}
+.shadow-xl {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+}
+.shadow-2xl {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
 
