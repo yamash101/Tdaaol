@@ -159,7 +159,7 @@ authForm.addEventListener('submit', async (e) => {
         errorMessage = 'فشل تسجيل الدخول. تحقق من اسم المستخدم وكلمة المرور.';
     } else {
         endpoint = `${BACKEND_URL}/api/user/register`;
-        successMessage = 'تم تسجيل حساب جديد بنجاح! يمكنك الآن تسجيل الدخول.';
+        successMessage = 'تم التسجيل بنجاح! يمكنك الآن تسجيل الدخول.';
         errorMessage = 'فشل التسجيل. ربما اسم المستخدم موجود بالفعل.';
     }
 
