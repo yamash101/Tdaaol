@@ -605,3 +605,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (document.getElementById('sell-symbol')) document.getElementById('sell-symbol').addEventListener('change', updateEstimatedPrice);
     if (document.getElementById('sell-quantity')) document.getElementById('sell-quantity').addEventListener('input', updateEstimatedPrice);
 });
+
