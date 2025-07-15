@@ -137,3 +137,22 @@ tbody tr:hover {
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
 
+/* تخصيص أزرار التنقل الفرعية في الملف الشخصي */
+.profile-sub-nav-link {
+    border: none;
+    cursor: pointer;
+    outline: none;
+    font-size: 0.875rem; /* text-sm */
+    padding: 0.5rem 1rem; /* py-2 px-4 */
+    border-radius: 9999px; /* rounded-full */
+    white-space: nowrap;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease-in-out;
+}
+
+.profile-sub-nav-link.active-sub-tab {
+    background-color: #2563eb; /* أزرق داكن */
+    color: white;
+    box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);
+}
+
