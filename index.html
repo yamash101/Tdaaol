@@ -54,36 +54,45 @@
 <body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col">
     <!-- رأس الصفحة (Header) - شريط التنقل العلوي الموسع -->
     <header class="bg-gray-800 p-6 md:p-8 shadow-lg">
-        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+        <div class="container mx-auto flex justify-between items-center">
             <!-- شعار الموقع -->
             <h1 class="text-3xl md:text-4xl font-extrabold text-blue-400">بوابة التداول <span class="text-white text-xl md:text-2xl font-light">الخاصة بك</span></h1>
-            <!-- أزرار التنقل الرئيسية (تظهر على الشاشات الكبيرة) -->
-            <nav id="main-nav" class="hidden md:flex flex-wrap justify-center md:justify-end gap-4 items-center">
-                <a href="#" data-section="dashboard-section" class="nav-link text-gray-300 hover:text-blue-400 transition-colors duration-300 p-2 rounded-md font-semibold text-lg">لوحة التحكم</a>
-                <a href="#" data-section="trade-section" class="nav-link text-gray-300 hover:text-blue-400 transition-colors duration-300 p-2 rounded-md font-semibold text-lg">التداول الفوري</a>
-                <a href="#" data-section="deposit-withdraw-section" class="nav-link text-gray-300 hover:text-blue-400 transition-colors duration-300 p-2 rounded-md font-semibold text-lg">إيداع/سحب</a>
-                <button id="logout-button" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full shadow-md transition-all duration-300 transform hover:scale-105 text-base">
-                    <i class="fas fa-sign-out-alt ml-2"></i> تسجيل الخروج
-                </button>
-            </nav>
-            <!-- زر قائمة الجوال (يظهر على الشاشات الصغيرة) -->
-            <button id="mobile-menu-button" class="md:hidden text-gray-300 focus:outline-none p-2 rounded-md hover:bg-gray-700 transition-colors duration-300">
+            <!-- زر قائمة الجوال (يظهر على جميع الشاشات الآن للتنقل الرئيسي) -->
+            <button id="mobile-menu-button" class="text-gray-300 focus:outline-none p-2 rounded-md hover:bg-gray-700 transition-colors duration-300">
                 <i class="fas fa-bars text-3xl"></i>
             </button>
         </div>
     </header>
 
-    <!-- قائمة الجوال المنبثقة (تظهر عند النقر على زر القائمة في الجوال) -->
+    <!-- قائمة الجوال الجانبية المنبثقة (Side Menu) - تحتوي على جميع خيارات التنقل -->
     <div id="mobile-menu" class="hidden md:hidden bg-gray-800 p-6 shadow-2xl absolute w-full z-20">
         <nav class="flex flex-col space-y-4 text-center">
-            <a href="#" data-section="dashboard-section" class="nav-link text-gray-300 hover:text-blue-400 transition-colors duration-300 p-3 rounded-md font-semibold text-lg">لوحة التحكم</a>
-            <a href="#" data-section="trade-section" class="nav-link text-gray-300 hover:text-blue-400 transition-colors duration-300 p-3 rounded-md font-semibold text-lg">التداول الفوري</a>
-            <a href="#" data-section="deposit-withdraw-section" class="nav-link text-gray-300 hover:text-blue-400 transition-colors duration-300 p-3 rounded-md font-semibold text-lg">إيداع/سحب</a>
+            <!-- زر الملف الشخصي (سيفتح قائمة فرعية أو ينتقل لصفحة الملف) -->
+            <button id="profile-menu-button" class="nav-link text-gray-300 hover:text-blue-400 transition-colors duration-300 p-3 rounded-md font-semibold text-lg flex items-center justify-center">
+                <i class="fas fa-user-circle ml-2"></i> الملف الشخصي
+            </button>
+            <a href="#" data-section="trade-section" class="nav-link text-gray-300 hover:text-blue-400 transition-colors duration-300 p-3 rounded-md font-semibold text-lg">
+                <i class="fas fa-chart-line ml-2"></i> التداول الفوري
+            </a>
+            <!-- زر تسجيل الخروج داخل القائمة الجانبية -->
             <button id="mobile-logout-button" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-full shadow-md transition-all duration-300 transform hover:scale-105 w-full">
                 <i class="fas fa-sign-out-alt ml-2"></i> تسجيل الخروج
             </button>
         </nav>
     </div>
+
+    <!-- شريط الرصيد المصغر (يظهر تحت الهيدر بعد تسجيل الدخول) -->
+    <section id="balance-bar-section" class="hidden bg-gray-700 p-3 shadow-md text-center text-gray-200">
+        <div class="container mx-auto flex flex-wrap justify-around items-center text-sm md:text-base gap-2">
+            <p class="font-semibold">الرصيد الإجمالي: <span id="balance-bar-total" class="text-green-400 font-bold">0.00 USDT</span></p>
+            <p class="font-semibold">BTC: <span id="balance-bar-btc" class="text-yellow-400 font-bold">0.00</span></p>
+            <p class="font-semibold">ETH: <span id="balance-bar-eth" class="text-purple-400 font-bold">0.00</span></p>
+            <!-- أزرار الإيداع والسحب في الشريط المصغر -->
+            <a href="#" data-section="deposit-withdraw-section" class="nav-link text-blue-400 hover:underline font-semibold">
+                <i class="fas fa-money-bill-transfer ml-1"></i> إيداع/سحب
+            </a>
+        </div>
+    </section>
 
     <!-- المحتوى الرئيسي للموقع (سيتم تبديله ديناميكياً بواسطة JavaScript) -->
     <main class="flex-grow container mx-auto p-4 flex flex-col justify-center items-center">
@@ -153,83 +162,158 @@
             <div id="link-binance-message" class="mt-4 text-center text-red-400 font-semibold text-sm md:text-base"></div>
         </section>
 
-        <!-- قسم لوحة التحكم (يظهر بعد تسجيل الدخول وربط الحساب) -->
-        <section id="dashboard-section" class="hidden w-full p-4 md:p-6 bg-gray-800 rounded-xl shadow-2xl transition-all duration-500 ease-in-out">
-            <h2 class="text-2xl md:text-3xl font-extrabold text-blue-400 mb-6">لوحة التحكم <span class="text-white text-lg md:text-xl font-light">نظرة عامة على محفظتك</span></h2>
-            <p class="text-gray-400 mb-8 text-center text-sm md:text-base">هنا يمكنك متابعة أرصدتك الحالية التي يتم جلبها مباشرة من حسابك الآمن في باينانس. كل رصيد يعكس قيمته الحقيقية.</p>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-8">
-                <!-- بطاقة الرصيد الإجمالي -->
-                <div class="bg-gray-700 p-6 rounded-lg shadow-xl text-center border-b-4 border-blue-500 flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-gray-300 text-lg md:text-xl font-semibold mb-2">الرصيد الإجمالي (USDT)</h3>
-                        <p id="total-balance" class="text-4xl md:text-5xl font-extrabold text-green-400">0.00 <span class="text-2xl md:text-3xl font-normal">USDT</span></p>
-                    </div>
-                    <p class="text-gray-400 text-xs md:text-sm mt-2">مجموع قيمة أصولك بالدولار الأمريكي</p>
-                </div>
-                <!-- بطاقة رصيد البيتكوين -->
-                <div class="bg-gray-700 p-6 rounded-lg shadow-xl text-center border-b-4 border-yellow-500 flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-gray-300 text-lg md:text-xl font-semibold mb-2">رصيد البيتكوين (BTC)</h3>
-                        <p id="btc-balance" class="text-3xl md:text-4xl font-bold text-yellow-400">0.00 <span class="text-xl md:text-2xl font-normal">BTC</span></p>
-                    </div>
-                    <p class="text-gray-400 text-xs md:text-sm mt-2">كمية البيتكوين المتوفرة لديك للتداول</p>
-                </div>
-                <!-- بطاقة رصيد الإيثيريوم -->
-                <div class="bg-gray-700 p-6 rounded-lg shadow-xl text-center border-b-4 border-purple-500 flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-gray-300 text-lg md:text-xl font-semibold mb-2">رصيد الإيثيريوم (ETH)</h3>
-                        <p id="eth-balance" class="text-3xl md:text-4xl font-bold text-purple-400">0.00 <span class="text-xl md:text-2xl font-normal">ETH</span></p>
-                    </div>
-                    <p class="text-gray-400 text-xs md:text-sm mt-2">كمية الإيثيريوم المتوفرة لديك للتداول</p>
-                </div>
-            </div>
+        <!-- قسم الملف الشخصي (يحتوي على لوحة التحكم الكاملة، الإعدادات، الأمان، الأزرار) -->
+        <section id="profile-section" class="hidden w-full p-4 md:p-6 bg-gray-800 rounded-xl shadow-2xl transition-all duration-500 ease-in-out">
+            <h2 class="text-2xl md:text-3xl font-extrabold text-blue-400 mb-6">ملفك الشخصي <span class="text-white text-lg md:text-xl font-light">إدارة حسابك</span></h2>
+            <p class="text-gray-400 mb-8 text-center text-sm md:text-base">
+                هنا يمكنك إدارة جميع جوانب حسابك، من معلوماتك الشخصية إلى إعدادات الأمان وسجل التداول المفصل.
+            </p>
 
-            <!-- قسم آخر التداولات (سجل التداول) -->
-            <h3 class="text-xl md:text-2xl font-bold text-gray-200 mb-6">آخر التداولات <span class="text-base md:text-lg font-light text-gray-400">سجل عملياتك الأخيرة</span></h3>
-            <div class="overflow-x-auto bg-gray-700 rounded-lg shadow-xl">
-                <table class="min-w-full divide-y divide-gray-600">
-                    <thead class="bg-gray-600">
-                        <tr>
-                            <th scope="col" class="px-4 py-2 md:px-6 md:py-3 text-right text-xs font-medium text-gray-200 uppercase tracking-wider">
-                                العملة
-                            </th>
-                            <th scope="col" class="px-4 py-2 md:px-6 md:py-3 text-right text-xs font-medium text-gray-200 uppercase tracking-wider">
-                                النوع
-                            </th>
-                            <th scope="col" class="px-4 py-2 md:px-6 md:py-3 text-right text-xs font-medium text-gray-200 uppercase tracking-wider">
-                                الكمية
-                            </th>
-                            <th scope="col" class="px-4 py-2 md:px-6 md:py-3 text-right text-xs font-medium text-gray-200 uppercase tracking-wider">
-                                السعر
-                            </th>
-                            <th scope="col" class="px-4 py-2 md:px-6 md:py-3 text-right text-xs font-medium text-gray-200 uppercase tracking-wider">
-                                التاريخ
-                            </th>
-                            <th scope="col" class="px-4 py-2 md:px-6 md:py-3 text-right text-xs font-medium text-gray-200 uppercase tracking-wider">
-                                الحالة
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody id="trade-history-body" class="bg-gray-700 divide-y divide-gray-600">
-                        <!-- سيتم ملء هذا بواسطة JavaScript -->
-                        <tr>
-                            <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-300">BTC/USDT</td>
-                            <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-green-400">شراء</td>
-                            <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-300">0.01</td>
-                            <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-300">30000 USDT</td>
-                            <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-300">2025-07-14</td>
-                            <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-green-400">مكتمل</td>
-                        </tr>
-                        <tr>
-                            <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-300">ETH/USDT</td>
-                            <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-red-400">بيع</td>
-                            <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-300">0.1</td>
-                            <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-300">2000 USDT</td>
-                            <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-300">2025-07-13</td>
-                            <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-green-400">مكتمل</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <!-- التنقل الفرعي داخل قسم الملف الشخصي -->
+            <nav class="flex justify-center flex-wrap gap-4 mb-8">
+                <button data-sub-section="my-profile-details" class="profile-sub-nav-link bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full shadow-md transition-all duration-300 transform hover:scale-105 text-sm md:text-base active-sub-tab">
+                    <i class="fas fa-user ml-2"></i> ملفي
+                </button>
+                <button data-sub-section="account-settings" class="profile-sub-nav-link bg-gray-600 hover:bg-gray-700 text-gray-300 font-bold py-2 px-4 rounded-full shadow-md transition-all duration-300 transform hover:scale-105 text-sm md:text-base">
+                    <i class="fas fa-cog ml-2"></i> الإعدادات
+                </button>
+                <button data-sub-section="security-settings" class="profile-sub-nav-link bg-gray-600 hover:bg-gray-700 text-gray-300 font-bold py-2 px-4 rounded-full shadow-md transition-all duration-300 transform hover:scale-105 text-sm md:text-base">
+                    <i class="fas fa-shield-alt ml-2"></i> الأمان
+                </button>
+                <button data-sub-section="full-dashboard-section" class="profile-sub-nav-link bg-gray-600 hover:bg-gray-700 text-gray-300 font-bold py-2 px-4 rounded-full shadow-md transition-all duration-300 transform hover:scale-105 text-sm md:text-base">
+                    <i class="fas fa-tachometer-alt ml-2"></i> لوحة التحكم المفصلة
+                </button>
+            </nav>
+
+            <!-- محتوى الأقسام الفرعية للملف الشخصي -->
+            <div id="profile-sub-sections-container">
+                <!-- قسم ملفي (My Profile) -->
+                <div id="my-profile-details" class="profile-sub-section bg-gray-700 p-6 rounded-lg shadow-xl mb-8">
+                    <h3 class="text-xl md:text-2xl font-bold text-gray-200 mb-4">معلومات الملف الشخصي</h3>
+                    <p class="text-gray-300 text-sm md:text-base mb-4">هنا يمكنك عرض وتعديل معلومات حسابك الأساسية.</p>
+                    <div class="space-y-3">
+                        <p class="text-gray-300"><span class="font-semibold text-blue-300">اسم المستخدم:</span> <span id="profile-username">Loading...</span></p>
+                        <p class="text-gray-300"><span class="font-semibold text-blue-300">تاريخ الانضمام:</span> <span id="profile-join-date">Loading...</span></p>
+                        <!-- يمكن إضافة المزيد من الحقول هنا مثل البريد الإلكتروني، الاسم، إلخ -->
+                    </div>
+                    <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full shadow-md mt-6 transition-all duration-300 transform hover:scale-105 text-sm md:text-base">
+                        <i class="fas fa-edit ml-2"></i> تعديل الملف
+                    </button>
+                </div>
+
+                <!-- قسم الإعدادات (Account Settings) -->
+                <div id="account-settings" class="profile-sub-section hidden bg-gray-700 p-6 rounded-lg shadow-xl mb-8">
+                    <h3 class="text-xl md:text-2xl font-bold text-gray-200 mb-4">إعدادات الحساب</h3>
+                    <p class="text-gray-300 text-sm md:text-base mb-4">قم بتخصيص تجربتك. يمكنك تغيير إعدادات الإشعارات، اللغة، وغيرها هنا.</p>
+                    <ul class="list-disc list-inside text-gray-300 space-y-2 text-sm md:text-base">
+                        <li>تلقي إشعارات البريد الإلكتروني: <span class="text-green-400">مفعل</span></li>
+                        <li>اللغة المفضلة: <span class="text-blue-300">العربية</span></li>
+                        <!-- يمكن إضافة المزيد من الإعدادات هنا -->
+                    </ul>
+                    <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full shadow-md mt-6 transition-all duration-300 transform hover:scale-105 text-sm md:text-base">
+                        <i class="fas fa-sliders-h ml-2"></i> حفظ الإعدادات
+                    </button>
+                </div>
+
+                <!-- قسم الأمان (Security Settings) -->
+                <div id="security-settings" class="profile-sub-section hidden bg-gray-700 p-6 rounded-lg shadow-xl mb-8">
+                    <h3 class="text-xl md:text-2xl font-bold text-gray-200 mb-4">إعدادات الأمان</h3>
+                    <p class="text-gray-300 text-sm md:text-base mb-4">حماية حسابك هي أولويتنا القصوى. قم بتفعيل المصادقة الثنائية وتغيير كلمة المرور بانتظام.</p>
+                    <ul class="list-disc list-inside text-gray-300 space-y-2 text-sm md:text-base">
+                        <li>المصادقة الثنائية (2FA): <span class="text-red-400">غير مفعل</span> <button class="text-blue-400 hover:underline ml-2">تفعيل الآن</button></li>
+                        <li>آخر تسجيل دخول: <span class="text-gray-300">2025-07-15 10:30 AM</span></li>
+                    </ul>
+                    <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full shadow-md mt-6 transition-all duration-300 transform hover:scale-105 text-sm md:text-base">
+                        <i class="fas fa-key ml-2"></i> تغيير كلمة المرور
+                    </button>
+                </div>
+
+                <!-- قسم لوحة التحكم المفصلة (Full Dashboard) - هذا هو قسم لوحة التحكم السابق -->
+                <div id="full-dashboard-section" class="profile-sub-section hidden p-4 md:p-6 bg-gray-700 rounded-xl shadow-xl">
+                    <h3 class="text-xl md:text-2xl font-extrabold text-blue-400 mb-6">لوحة التحكم المفصلة <span class="text-white text-lg md:text-xl font-light">نظرة شاملة على محفظتك وتداولاتك</span></h3>
+                    <p class="text-gray-400 mb-8 text-center text-sm md:text-base">
+                        هنا تجد تفاصيل أرصدتك الدقيقة وسجل تداولاتك الكامل، كل ذلك يتم جلبه مباشرة من حسابك الآمن في باينانس.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-8">
+                        <!-- بطاقة الرصيد الإجمالي -->
+                        <div class="bg-gray-800 p-6 rounded-lg shadow-xl text-center border-b-4 border-blue-500">
+                            <h4 class="text-gray-300 text-lg md:text-xl font-semibold mb-2">الرصيد الإجمالي (USDT)</h4>
+                            <p id="full-total-balance" class="text-4xl md:text-5xl font-extrabold text-green-400">0.00 <span class="text-2xl md:text-3xl font-normal">USDT</span></p>
+                            <p class="text-gray-400 text-xs md:text-sm mt-2">مجموع قيمة أصولك بالدولار الأمريكي</p>
+                        </div>
+                        <!-- بطاقة رصيد البيتكوين -->
+                        <div class="bg-gray-800 p-6 rounded-lg shadow-xl text-center border-b-4 border-yellow-500">
+                            <h4 class="text-gray-300 text-lg md:text-xl font-semibold mb-2">رصيد البيتكوين (BTC)</h4>
+                            <p id="full-btc-balance" class="text-3xl md:text-4xl font-bold text-yellow-400">0.00 <span class="text-xl md:text-2xl font-normal">BTC</span></p>
+                            <p class="text-gray-400 text-xs md:text-sm mt-2">كمية البيتكوين المتوفرة لديك للتداول</p>
+                        </div>
+                        <!-- بطاقة رصيد الإيثيريوم -->
+                        <div class="bg-gray-800 p-6 rounded-lg shadow-xl text-center border-b-4 border-purple-500">
+                            <h4 class="text-gray-300 text-lg md:text-xl font-semibold mb-2">رصيد الإيثيريوم (ETH)</h4>
+                            <p id="full-eth-balance" class="text-3xl md:text-4xl font-bold text-purple-400">0.00 <span class="text-xl md:text-2xl font-normal">ETH</span></p>
+                            <p class="text-gray-400 text-xs md:text-sm mt-2">كمية الإيثيريوم المتوفرة لديك للتداول</p>
+                        </div>
+                    </div>
+
+                    <!-- قسم آخر التداولات (سجل التداول) -->
+                    <h4 class="text-xl md:text-2xl font-bold text-gray-200 mb-6">آخر التداولات <span class="text-base md:text-lg font-light text-gray-400">سجل عملياتك الأخيرة</span></h4>
+                    <div class="overflow-x-auto bg-gray-800 rounded-lg shadow-xl">
+                        <table class="min-w-full divide-y divide-gray-600">
+                            <thead class="bg-gray-600">
+                                <tr>
+                                    <th scope="col" class="px-4 py-2 md:px-6 md:py-3 text-right text-xs font-medium text-gray-200 uppercase tracking-wider">
+                                        العملة
+                                    </th>
+                                    <th scope="col" class="px-4 py-2 md:px-6 md:py-3 text-right text-xs font-medium text-gray-200 uppercase tracking-wider">
+                                        النوع
+                                    </th>
+                                    <th scope="col" class="px-4 py-2 md:px-6 md:py-3 text-right text-xs font-medium text-gray-200 uppercase tracking-wider">
+                                        الكمية
+                                    </th>
+                                    <th scope="col" class="px-4 py-2 md:px-6 md:py-3 text-right text-xs font-medium text-gray-200 uppercase tracking-wider">
+                                        السعر
+                                    </th>
+                                    <th scope="col" class="px-4 py-2 md:px-6 md:py-3 text-right text-xs font-medium text-gray-200 uppercase tracking-wider">
+                                        التاريخ
+                                    </th>
+                                    <th scope="col" class="px-4 py-2 md:px-6 md:py-3 text-right text-xs font-medium text-gray-200 uppercase tracking-wider">
+                                        الحالة
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="trade-history-body" class="bg-gray-700 divide-y divide-gray-600">
+                                <!-- سيتم ملء هذا بواسطة JavaScript -->
+                                <tr>
+                                    <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-300">BTC/USDT</td>
+                                    <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-green-400">شراء</td>
+                                    <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-300">0.01</td>
+                                    <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-300">30000 USDT</td>
+                                    <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-300">2025-07-14</td>
+                                    <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-green-400">مكتمل</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-300">ETH/USDT</td>
+                                    <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-red-400">بيع</td>
+                                    <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-300">0.1</td>
+                                    <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-300">2000 USDT</td>
+                                    <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-green-400">مكتمل</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- أزرار الإيداع والسحب وتسجيل الخروج في لوحة التحكم المفصلة -->
+                    <div class="flex flex-wrap justify-center gap-4 mt-8">
+                        <a href="#" data-section="deposit-withdraw-section" class="nav-link bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full shadow-md transition-all duration-300 transform hover:scale-105 text-sm md:text-base">
+                            <i class="fas fa-wallet ml-2"></i> إيداع الأموال
+                        </a>
+                        <a href="#" data-section="deposit-withdraw-section" class="nav-link bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full shadow-md transition-all duration-300 transform hover:scale-105 text-sm md:text-base">
+                            <i class="fas fa-arrow-alt-circle-up ml-2"></i> سحب الأموال
+                        </a>
+                        <button id="full-dashboard-logout-button" class="bg-red-800 hover:bg-red-900 text-white font-bold py-2 px-4 rounded-full shadow-md transition-all duration-300 transform hover:scale-105 text-sm md:text-base">
+                            <i class="fas fa-sign-out-alt ml-2"></i> تسجيل الخروج
+                        </button>
+                    </div>
+                </div>
             </div>
         </section>
 
