@@ -82,6 +82,7 @@ function hideAllSections() {
     tradeSection.classList.add('hidden');
     depositWithdrawSection.classList.add('hidden');
     mobileMenu.classList.remove('active'); // إخفاء قائمة الجوال إذا كانت مفتوحة
+    mobileMenu.classList.add('hidden'); // التأكد من إخفاء قائمة الجوال تماماً
     balanceBarSection.classList.add('hidden'); // إخفاء شريط الرصيد المصغر
 }
 
@@ -96,6 +97,7 @@ function showSection(sectionId) {
 
 // دالة لتحديث حالة واجهة المستخدم بناءً على حالة تسجيل الدخول وربط باينانس
 async function updateUI() {
+    console.log('Updating UI. isLoggedIn:', isLoggedIn, 'isBinanceLinked:', isBinanceLinked, 'currentUsername:', currentUsername);
     // إخفاء جميع الأقسام في البداية
     hideAllSections();
 
@@ -209,6 +211,11 @@ async function checkBinanceLinkStatus() {
         // هنا نستدعي نقطة نهاية جديدة في الواجهة الخلفية للتحقق
         // هذه النقطة ستتحقق مما إذا كان لدى المستخدم مفاتيح API مخزنة
         const response = await fetch(`${BACKEND_URL}/api/user/check-binance-link/${currentUsername}`);
+        if (!response.ok) {
+            // إذا لم تكن الاستجابة 200 OK، اعتبرها غير مرتبطة
+            isBinanceLinked = false;
+            return;
+        }
         const data = await response.json();
         isBinanceLinked = data.isLinked;
     } catch (error) {
@@ -268,13 +275,29 @@ navLinks.forEach(link => {
         e.preventDefault();
         const targetSectionId = link.dataset.section; // الحصول على معرف القسم من سمة data-section
         showSection(targetSectionId); // إظهار القسم المطلوب
-        mobileMenu.classList.remove('active'); // إخفاء قائمة الجوال بعد النقر
+        // mobileMenu.classList.remove('active'); // إخفاء قائمة الجوال بعد النقر
+        // mobileMenu.classList.add('hidden'); // التأكد من إخفائها تماماً بعد النقر
     });
 });
 
 // معالجة النقر على زر قائمة الجوال (Hamburger menu)
 mobileMenuButton.addEventListener('click', () => {
-    mobileMenu.classList.toggle('active'); // تبديل حالة الفئة 'active' لإظهار/إخفاء القائمة
+    console.log('Mobile menu button clicked!');
+    if (mobileMenu.classList.contains('active')) {
+        // If menu is currently active, close it
+        mobileMenu.classList.remove('active');
+        // After the transition, set display to none
+        mobileMenu.addEventListener('transitionend', function handler() {
+            mobileMenu.classList.add('hidden');
+            mobileMenu.removeEventListener('transitionend', handler); // Remove listener to prevent multiple calls
+        }, { once: true }); // Ensure listener runs only once
+    } else {
+        // If menu is currently hidden, open it
+        mobileMenu.classList.remove('hidden'); // Make it display: block/flex
+        // Force reflow to apply display: block before transition starts
+        void mobileMenu.offsetWidth; // Trigger reflow
+        mobileMenu.classList.add('active'); // Start the transition
+    }
 });
 
 // معالجة النقر على أزرار تسجيل الخروج
@@ -296,9 +319,11 @@ logoutButtons.forEach(button => {
 // معالجة أحداث التنقل الفرعي داخل قسم الملف الشخصي
 // ----------------------------------------------------
 profileMenuButton.addEventListener('click', () => {
+    console.log('Profile menu button clicked!');
     showSection('profile-section'); // عند النقر على "الملف الشخصي"، أظهر قسم الملف الشخصي
     showProfileSubSection('my-profile-details'); // واعرض قسم "ملفي" افتراضياً
     mobileMenu.classList.remove('active'); // إخفاء قائمة الجوال
+    mobileMenu.classList.add('hidden'); // التأكد من إخفائها تماماً
 });
 
 profileSubNavLinks.forEach(link => {
@@ -495,14 +520,14 @@ async function fetchAndDisplayBalance() {
 
         if (balance) {
             // تحديث الأرصدة في لوحة التحكم المفصلة
-            totalBalanceElement.innerHTML = `${balance.USDT.toFixed(2)} <span class="text-2xl md:text-3xl font-normal">USDT</span>`;
-            btcBalanceElement.innerHTML = `${balance.BTC.toFixed(2)} <span class="text-xl md:text-2xl font-normal">BTC</span>`;
-            ethBalanceElement.innerHTML = `${balance.ETH.toFixed(2)} <span class="text-xl md:text-2xl font-normal">ETH</span>`;
+            if (totalBalanceElement) totalBalanceElement.innerHTML = `${balance.USDT.toFixed(2)} <span class="text-2xl md:text-3xl font-normal">USDT</span>`;
+            if (btcBalanceElement) btcBalanceElement.innerHTML = `${balance.BTC.toFixed(2)} <span class="text-xl md:text-2xl font-normal">BTC</span>`;
+            if (ethBalanceElement) ethBalanceElement.innerHTML = `${balance.ETH.toFixed(2)} <span class="text-xl md:text-2xl font-normal">ETH</span>`;
 
             // تحديث الأرصدة في شريط الرصيد المصغر
-            balanceBarTotalElement.textContent = `${balance.USDT.toFixed(2)} USDT`;
-            balanceBarBtcElement.textContent = balance.BTC.toFixed(2);
-            balanceBarEthElement.textContent = balance.ETH.toFixed(2);
+            if (balanceBarTotalElement) balanceBarTotalElement.textContent = `${balance.USDT.toFixed(2)} USDT`;
+            if (balanceBarBtcElement) balanceBarBtcElement.textContent = balance.BTC.toFixed(2);
+            if (balanceBarEthElement) balanceBarEthElement.textContent = balance.ETH.toFixed(2);
         }
     } catch (error) {
         console.error('Error fetching balance:', error);
@@ -560,20 +585,23 @@ function updateEstimatedPrice() {
 // تهيئة الواجهة عند تحميل الصفحة
 // ----------------------------------------------------
 document.addEventListener('DOMContentLoaded', async () => {
+    console.log('DOM Content Loaded. Initializing UI...');
     // التحقق من حالة تسجيل الدخول وربط باينانس عند تحميل الصفحة
     if (currentUsername) {
         isLoggedIn = true;
         await checkBinanceLinkStatus(); // تحقق من ربط باينانس بناءً على اسم المستخدم
     }
     updateUI(); // تحديث الواجهة بناءً على الحالة الأولية
+    console.log('Initial UI updated.');
 
     // تحديث الأسعار والأرصدة كل 10 ثوانٍ (لإعطاء إحساس بالوقت الفعلي)
     setInterval(fetchAndDisplayPrices, 10000);
     setInterval(fetchAndDisplayBalance, 10000);
 
     // تحديث السعر التقديري عند تغيير الكمية أو العملة
-    document.getElementById('buy-symbol').addEventListener('change', updateEstimatedPrice);
-    document.getElementById('buy-quantity').addEventListener('input', updateEstimatedPrice);
-    document.getElementById('sell-symbol').addEventListener('change', updateEstimatedPrice);
-    document.getElementById('sell-quantity').addEventListener('input', updateEstimatedPrice);
+    // تأكد من وجود العناصر قبل إضافة المستمعين
+    if (document.getElementById('buy-symbol')) document.getElementById('buy-symbol').addEventListener('change', updateEstimatedPrice);
+    if (document.getElementById('buy-quantity')) document.getElementById('buy-quantity').addEventListener('input', updateEstimatedPrice);
+    if (document.getElementById('sell-symbol')) document.getElementById('sell-symbol').addEventListener('change', updateEstimatedPrice);
+    if (document.getElementById('sell-quantity')) document.getElementById('sell-quantity').addEventListener('input', updateEstimatedPrice);
 });
