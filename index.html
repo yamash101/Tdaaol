@@ -18,6 +18,7 @@
             font-family: 'Inter', sans-serif; /* يمكن استبداله بخط عربي مثل 'Cairo', 'Noto Sans Arabic' */
             direction: rtl; /* اتجاه النص من اليمين لليسار */
             text-align: right; /* محاذاة النص لليمين */
+            background-color: #1a202c; /* خلفية داكنة جداً ومريحة للعين */
         }
         /* تخصيص شريط التمرير (Scrollbar) لجعل الواجهة أفخم */
         ::-webkit-scrollbar {
@@ -35,7 +36,7 @@
         }
         /* تخصيص خاص لقائمة الجوال المنبثقة */
         #mobile-menu {
-            top: 64px; /* ارتفاع رأس الصفحة */
+            top: 80px; /* ارتفاع رأس الصفحة الموسع */
             left: 0;
             right: 0;
             transform: translateY(-100%); /* إخفاء القائمة للأعلى */
@@ -51,23 +52,23 @@
     </style>
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col">
-    <!-- رأس الصفحة (Header) - شريط التنقل العلوي -->
-    <header class="bg-gray-800 p-4 shadow-lg">
-        <div class="container mx-auto flex justify-between items-center">
+    <!-- رأس الصفحة (Header) - شريط التنقل العلوي الموسع -->
+    <header class="bg-gray-800 p-6 md:p-8 shadow-lg">
+        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <!-- شعار الموقع -->
-            <h1 class="text-2xl md:text-3xl font-extrabold text-blue-400">بوابة التداول <span class="text-white text-lg md:text-xl font-light">الخاصة بك</span></h1>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-blue-400">بوابة التداول <span class="text-white text-xl md:text-2xl font-light">الخاصة بك</span></h1>
             <!-- أزرار التنقل الرئيسية (تظهر على الشاشات الكبيرة) -->
-            <nav id="main-nav" class="hidden md:flex space-x-4 space-x-reverse items-center">
-                <a href="#" data-section="dashboard-section" class="nav-link text-gray-300 hover:text-blue-400 transition-colors duration-300 p-2 rounded-md font-semibold">لوحة التحكم</a>
-                <a href="#" data-section="trade-section" class="nav-link text-gray-300 hover:text-blue-400 transition-colors duration-300 p-2 rounded-md font-semibold">التداول الفوري</a>
-                <a href="#" data-section="deposit-withdraw-section" class="nav-link text-gray-300 hover:text-blue-400 transition-colors duration-300 p-2 rounded-md font-semibold">إيداع/سحب</a>
-                <button id="logout-button" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full shadow-md transition-all duration-300 transform hover:scale-105">
+            <nav id="main-nav" class="hidden md:flex flex-wrap justify-center md:justify-end gap-4 items-center">
+                <a href="#" data-section="dashboard-section" class="nav-link text-gray-300 hover:text-blue-400 transition-colors duration-300 p-2 rounded-md font-semibold text-lg">لوحة التحكم</a>
+                <a href="#" data-section="trade-section" class="nav-link text-gray-300 hover:text-blue-400 transition-colors duration-300 p-2 rounded-md font-semibold text-lg">التداول الفوري</a>
+                <a href="#" data-section="deposit-withdraw-section" class="nav-link text-gray-300 hover:text-blue-400 transition-colors duration-300 p-2 rounded-md font-semibold text-lg">إيداع/سحب</a>
+                <button id="logout-button" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full shadow-md transition-all duration-300 transform hover:scale-105 text-base">
                     <i class="fas fa-sign-out-alt ml-2"></i> تسجيل الخروج
                 </button>
             </nav>
             <!-- زر قائمة الجوال (يظهر على الشاشات الصغيرة) -->
             <button id="mobile-menu-button" class="md:hidden text-gray-300 focus:outline-none p-2 rounded-md hover:bg-gray-700 transition-colors duration-300">
-                <i class="fas fa-bars text-2xl"></i>
+                <i class="fas fa-bars text-3xl"></i>
             </button>
         </div>
     </header>
@@ -88,8 +89,10 @@
     <main class="flex-grow container mx-auto p-4 flex flex-col justify-center items-center">
         <!-- قسم المصادقة (التسجيل / تسجيل الدخول) -->
         <section id="auth-section" class="w-full max-w-md bg-gray-800 p-6 md:p-8 rounded-xl shadow-2xl transform transition-all duration-500 ease-in-out scale-100 opacity-100">
-            <h2 class="text-2xl md:text-3xl font-extrabold text-center mb-6 text-blue-400" id="auth-title">مرحباً بك في بوابة التداول</h2>
-            <p class="text-gray-400 text-center mb-6 text-sm md:text-base">سجل الدخول أو أنشئ حساباً جديداً لتجربة تداول سلسة وموثوقة.</p>
+            <h2 class="text-2xl md:text-3xl font-extrabold text-center mb-6 text-blue-400">مرحباً بك في بوابة التداول</h2>
+            <p class="text-gray-400 text-center mb-6 text-sm md:text-base">
+                ابدأ رحلتك في عالم العملات الرقمية. سجل الدخول أو أنشئ حساباً جديداً لتجربة تداول سلسة وموثوقة.
+            </p>
             <form id="auth-form" class="space-y-4 md:space-y-6">
                 <div>
                     <label for="username" class="block text-gray-300 text-xs md:text-sm font-bold mb-2">اسم المستخدم:</label>
@@ -113,11 +116,11 @@
 
         <!-- قسم ربط حساب باينانس (يظهر بعد تسجيل الدخول لأول مرة) -->
         <section id="link-binance-section" class="hidden w-full max-w-xl bg-gray-800 p-6 md:p-8 rounded-xl shadow-2xl transform transition-all duration-500 ease-in-out">
-            <h2 class="text-2xl md:text-3xl font-extrabold text-center mb-6 text-blue-400">ربط حساب باينانس</h2>
+            <h2 class="text-2xl md:text-3xl font-extrabold text-center mb-6 text-blue-400">ربط حساب باينانس <span class="text-white text-lg md:text-xl font-light">خطوتك الأولى للتداول</span></h2>
             <p class="text-gray-300 mb-6 text-center text-sm md:text-base">
-                للبدء في رحلة التداول الممتعة، يرجى ربط حساب باينانس الخاص بك بمنصتنا الآمنة.
+                للبدء في رحلة التداول الممتعة والآمنة، يرجى ربط حساب باينانس الخاص بك بمنصتنا.
                 <br>
-                <span class="font-bold text-yellow-400">تنبيه هام جداً للأمان:</span> عند إنشاء مفتاح الـ API في باينانس، **لا تفعل صلاحية السحب (Enable Withdrawals) أبداً!**
+                <span class="font-bold text-yellow-400">تنبيه هام جداً للأمان:</span> عند إنشاء مفتاح الـ API في باينانس، **لا تفعل صلاحية السحب (Enable Withdrawals) أبداً!** هذا يحمي أموالك.
             </p>
             <div class="bg-gray-700 p-4 md:p-6 rounded-lg shadow-inner mb-6">
                 <h3 class="text-lg md:text-xl font-semibold text-gray-200 mb-3">خطوات سهلة للحصول على مفتاح الـ API من باينانس:</h3>
@@ -153,25 +156,31 @@
         <!-- قسم لوحة التحكم (يظهر بعد تسجيل الدخول وربط الحساب) -->
         <section id="dashboard-section" class="hidden w-full p-4 md:p-6 bg-gray-800 rounded-xl shadow-2xl transition-all duration-500 ease-in-out">
             <h2 class="text-2xl md:text-3xl font-extrabold text-blue-400 mb-6">لوحة التحكم <span class="text-white text-lg md:text-xl font-light">نظرة عامة على محفظتك</span></h2>
-            <p class="text-gray-400 mb-8 text-center text-sm md:text-base">هنا يمكنك متابعة أرصدتك الحالية التي يتم جلبها مباشرة من حسابك الآمن في باينانس.</p>
+            <p class="text-gray-400 mb-8 text-center text-sm md:text-base">هنا يمكنك متابعة أرصدتك الحالية التي يتم جلبها مباشرة من حسابك الآمن في باينانس. كل رصيد يعكس قيمته الحقيقية.</p>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-8">
                 <!-- بطاقة الرصيد الإجمالي -->
-                <div class="bg-gray-700 p-6 rounded-lg shadow-xl text-center border-b-4 border-blue-500">
-                    <h3 class="text-gray-300 text-lg md:text-xl font-semibold mb-2">الرصيد الإجمالي (USDT)</h3>
-                    <p id="total-balance" class="text-4xl md:text-5xl font-extrabold text-green-400">0.00 <span class="text-2xl md:text-3xl font-normal">USDT</span></p>
-                    <p class="text-gray-400 text-xs md:text-sm mt-2">رصيدك الفعلي في باينانس</p>
+                <div class="bg-gray-700 p-6 rounded-lg shadow-xl text-center border-b-4 border-blue-500 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-gray-300 text-lg md:text-xl font-semibold mb-2">الرصيد الإجمالي (USDT)</h3>
+                        <p id="total-balance" class="text-4xl md:text-5xl font-extrabold text-green-400">0.00 <span class="text-2xl md:text-3xl font-normal">USDT</span></p>
+                    </div>
+                    <p class="text-gray-400 text-xs md:text-sm mt-2">مجموع قيمة أصولك بالدولار الأمريكي</p>
                 </div>
                 <!-- بطاقة رصيد البيتكوين -->
-                <div class="bg-gray-700 p-6 rounded-lg shadow-xl text-center border-b-4 border-yellow-500">
-                    <h3 class="text-gray-300 text-lg md:text-xl font-semibold mb-2">رصيد البيتكوين (BTC)</h3>
-                    <p id="btc-balance" class="text-3xl md:text-4xl font-bold text-yellow-400">0.00 <span class="text-xl md:text-2xl font-normal">BTC</span></p>
-                    <p class="text-gray-400 text-xs md:text-sm mt-2">كمية البيتكوين المتوفرة لديك</p>
+                <div class="bg-gray-700 p-6 rounded-lg shadow-xl text-center border-b-4 border-yellow-500 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-gray-300 text-lg md:text-xl font-semibold mb-2">رصيد البيتكوين (BTC)</h3>
+                        <p id="btc-balance" class="text-3xl md:text-4xl font-bold text-yellow-400">0.00 <span class="text-xl md:text-2xl font-normal">BTC</span></p>
+                    </div>
+                    <p class="text-gray-400 text-xs md:text-sm mt-2">كمية البيتكوين المتوفرة لديك للتداول</p>
                 </div>
                 <!-- بطاقة رصيد الإيثيريوم -->
-                <div class="bg-gray-700 p-6 rounded-lg shadow-xl text-center border-b-4 border-purple-500">
-                    <h3 class="text-gray-300 text-lg md:text-xl font-semibold mb-2">رصيد الإيثيريوم (ETH)</h3>
-                    <p id="eth-balance" class="text-3xl md:text-4xl font-bold text-purple-400">0.00 <span class="text-xl md:text-2xl font-normal">ETH</span></p>
-                    <p class="text-gray-400 text-xs md:text-sm mt-2">كمية الإيثيريوم المتوفرة لديك</p>
+                <div class="bg-gray-700 p-6 rounded-lg shadow-xl text-center border-b-4 border-purple-500 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-gray-300 text-lg md:text-xl font-semibold mb-2">رصيد الإيثيريوم (ETH)</h3>
+                        <p id="eth-balance" class="text-3xl md:text-4xl font-bold text-purple-400">0.00 <span class="text-xl md:text-2xl font-normal">ETH</span></p>
+                    </div>
+                    <p class="text-gray-400 text-xs md:text-sm mt-2">كمية الإيثيريوم المتوفرة لديك للتداول</p>
                 </div>
             </div>
 
@@ -227,27 +236,33 @@
         <!-- قسم التداول (يظهر بعد تسجيل الدخول وربط الحساب) -->
         <section id="trade-section" class="hidden w-full p-4 md:p-6 bg-gray-800 rounded-xl shadow-2xl transition-all duration-500 ease-in-out">
             <h2 class="text-2xl md:text-3xl font-extrabold text-blue-400 mb-6">التداول الفوري <span class="text-white text-lg md:text-xl font-light">شراء وبيع العملات الرقمية بسهولة</span></h2>
-            <p class="text-gray-400 mb-8 text-center text-sm md:text-base">تداول العملات الرقمية الرئيسية بأسعار تنافسية، مع عمولتك المدمجة في السعر المعروض.</p>
+            <p class="text-gray-400 mb-8 text-center text-sm md:text-base">
+                تداول العملات الرقمية الرئيسية بأسعار تنافسية ومباشرة من باينانس، مع عمولتك المدمجة في السعر المعروض لشفافية تامة.
+            </p>
 
             <!-- أسعار العملات الحية -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-8" id="market-prices">
                 <!-- بطاقة سعر البيتكوين -->
-                <div class="bg-gray-700 p-6 rounded-lg shadow-xl border-b-4 border-blue-500">
-                    <div class="flex justify-between items-center mb-3">
-                        <h3 class="text-gray-300 text-lg md:text-xl font-semibold">BTC/USDT</h3>
-                        <span class="text-green-400 text-sm md:text-base font-bold bg-green-900 px-3 py-1 rounded-full">+0.5%</span>
+                <div class="bg-gray-700 p-6 rounded-lg shadow-xl border-b-4 border-blue-500 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="text-gray-300 text-lg md:text-xl font-semibold">BTC/USDT</h3>
+                            <span class="text-green-400 text-sm md:text-base font-bold bg-green-900 px-3 py-1 rounded-full">+0.5%</span>
+                        </div>
+                        <p id="btc-price" class="text-4xl md:text-5xl font-extrabold text-white">0.00 <span class="text-2xl md:text-3xl font-normal">USDT</span></p>
                     </div>
-                    <p id="btc-price" class="text-4xl md:text-5xl font-extrabold text-white">0.00 <span class="text-2xl md:text-3xl font-normal">USDT</span></p>
                     <p class="text-gray-400 text-xs md:text-sm mt-2">سعر باينانس الأصلي: <span id="btc-binance-price" class="font-semibold">0.00</span> USDT</p>
                     <p class="text-gray-400 text-xs md:text-sm">عمولتك على هذا السعر: <span id="btc-commission-rate" class="font-semibold">0.5</span>%</p>
                 </div>
                 <!-- بطاقة سعر الإيثيريوم -->
-                <div class="bg-gray-700 p-6 rounded-lg shadow-xl border-b-4 border-purple-500">
-                    <div class="flex justify-between items-center mb-3">
-                        <h3 class="text-gray-300 text-lg md:text-xl font-semibold">ETH/USDT</h3>
-                        <span class="text-red-400 text-sm md:text-base font-bold bg-red-900 px-3 py-1 rounded-full">-0.2%</span>
+                <div class="bg-gray-700 p-6 rounded-lg shadow-xl border-b-4 border-purple-500 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="text-gray-300 text-lg md:text-xl font-semibold">ETH/USDT</h3>
+                            <span class="text-red-400 text-sm md:text-base font-bold bg-red-900 px-3 py-1 rounded-full">-0.2%</span>
+                        </div>
+                        <p id="eth-price" class="text-4xl md:text-5xl font-extrabold text-white">0.00 <span class="text-2xl md:text-3xl font-normal">USDT</span></p>
                     </div>
-                    <p id="eth-price" class="text-4xl md:text-5xl font-extrabold text-white">0.00 <span class="text-2xl md:text-3xl font-normal">USDT</span></p>
                     <p class="text-gray-400 text-xs md:text-sm mt-2">سعر باينانس الأصلي: <span id="eth-binance-price" class="font-semibold">0.00</span> USDT</p>
                     <p class="text-gray-400 text-xs md:text-sm">عمولتك على هذا السعر: <span id="eth-commission-rate" class="font-semibold">0.5</span>%</p>
                 </div>
@@ -316,11 +331,15 @@
             </p>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                 <!-- بطاقة الإيداع -->
-                <div class="bg-gray-700 p-6 rounded-lg shadow-xl text-center border-b-4 border-green-500">
-                    <h3 class="text-lg md:text-xl font-semibold text-gray-200 mb-4">إيداع الأموال</h3>
-                    <p class="text-gray-300 mb-6 text-sm md:text-base">
-                        لإضافة الأموال إلى رصيدك، يرجى استخدام صفحة الإيداع في باينانس. سيظهر رصيدك المحدث هنا تلقائياً.
-                    </p>
+                <div class="bg-gray-700 p-6 rounded-lg shadow-xl text-center border-b-4 border-green-500 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-lg md:text-xl font-semibold text-gray-200 mb-4">إيداع الأموال</h3>
+                        <p class="text-gray-300 mb-6 text-sm md:text-base">
+                            لإضافة الأموال إلى رصيدك في منصتنا، يرجى إيداعها مباشرة في حسابك الخاص على باينانس.
+                            <br>
+                            <span class="font-semibold text-blue-300">سيتم تحديث رصيدك هنا تلقائياً بعد تأكيد الإيداع في باينانس.</span>
+                        </p>
+                    </div>
                     <a href="https://www.binance.com/en/my/wallet/deposit/crypto" target="_blank" class="block bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 md:py-3 md:px-6 rounded-full shadow-md transition-all duration-300 transform hover:scale-105 text-sm md:text-base">
                         <i class="fas fa-wallet ml-2"></i> اذهب إلى صفحة الإيداع في باينانس
                     </a>
@@ -328,11 +347,15 @@
                 </div>
 
                 <!-- بطاقة السحب -->
-                <div class="bg-gray-700 p-6 rounded-lg shadow-xl text-center border-b-4 border-red-500">
-                    <h3 class="text-lg md:text-xl font-semibold text-gray-200 mb-4">سحب الأموال</h3>
-                    <p class="text-gray-300 mb-6 text-sm md:text-base">
-                        لسحب أرباحك أو أي جزء من رصيدك، يرجى استخدام صفحة السحب في باينانس.
-                    </p>
+                <div class="bg-gray-700 p-6 rounded-lg shadow-xl text-center border-b-4 border-red-500 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-lg md:text-xl font-semibold text-gray-200 mb-4">سحب الأموال</h3>
+                        <p class="text-gray-300 mb-6 text-sm md:text-base">
+                            لسحب أرباحك أو أي جزء من رصيدك، يرجى سحبها مباشرة من حسابك في باينانس.
+                            <br>
+                            <span class="font-semibold text-blue-300">ستظهر عملية السحب في سجل معاملاتك على باينانس.</span>
+                        </p>
+                    </div>
                     <a href="https://www.binance.com/en/my/wallet/withdraw/crypto" target="_blank" class="block bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 md:py-3 md:px-6 rounded-full shadow-md transition-all duration-300 transform hover:scale-105 text-sm md:text-base">
                         <i class="fas fa-arrow-alt-circle-up ml-2"></i> اذهب إلى صفحة السحب في باينانس
                     </a>
@@ -343,12 +366,12 @@
     </main>
 
     <!-- تذييل الصفحة (Footer) -->
-    <footer class="bg-gray-800 p-4 text-center text-gray-400 text-xs md:text-sm mt-8 shadow-inner">
+    <footer class="bg-gray-800 p-6 text-center text-gray-400 text-xs md:text-sm mt-8 shadow-inner">
         <p>&copy; 2025 بوابة التداول الشخصية. جميع الحقوق محفوظة.</p>
-        <p class="mt-1">تداول بذكاء، تداول بأمان.</p>
+        <p class="mt-2">تداول بذكاء، تداول بأمان.</p>
     </footer>
 
-    <!-- ربط ملف JavaScript الخاص بنا (هذا هو الجزء الذي سيجعل كل شيء يعمل) -->
+    <!-- ربط ملف JavaScript الخاص بنا -->
     <script src="script.js"></script>
 </body>
 </html>
