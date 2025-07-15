@@ -11,7 +11,7 @@ const BACKEND_URL = 'https://44aebd2c-02d2-4e25-ab92-74acf0abffd1-00-2wmwwoslz97
 // ----------------------------------------------------
 const authSection = document.getElementById('auth-section');
 const linkBinanceSection = document.getElementById('link-binance-section');
-const dashboardSection = document.getElementById('dashboard-section');
+const profileSection = document.getElementById('profile-section'); // القسم الجديد للملف الشخصي
 const tradeSection = document.getElementById('trade-section');
 const depositWithdrawSection = document.getElementById('deposit-withdraw-section');
 
@@ -27,10 +27,12 @@ const linkBinanceMessage = document.getElementById('link-binance-message');
 const mobileMenuButton = document.getElementById('mobile-menu-button');
 const mobileMenu = document.getElementById('mobile-menu');
 const navLinks = document.querySelectorAll('.nav-link'); // جميع روابط التنقل الرئيسية والجوال
-const logoutButtons = document.querySelectorAll('#logout-button, #mobile-logout-button');
+const logoutButtons = document.querySelectorAll('#mobile-logout-button, #full-dashboard-logout-button'); // أزرار تسجيل الخروج
+
+const balanceBarSection = document.getElementById('balance-bar-section'); // شريط الرصيد المصغر
 
 const buyTab = document.getElementById('buy-tab');
-const sellTab = document = document.getElementById('sell-tab');
+const sellTab = document.getElementById('sell-tab');
 const buyForm = document.getElementById('buy-form');
 const sellForm = document.getElementById('sell-form');
 
@@ -41,9 +43,22 @@ const ethPriceElement = document.getElementById('eth-price');
 const ethBinancePriceElement = document.getElementById('eth-binance-price');
 const ethCommissionRateElement = document.getElementById('eth-commission-rate');
 
-const totalBalanceElement = document.getElementById('total-balance');
-const btcBalanceElement = document.getElementById('btc-balance');
-const ethBalanceElement = document.getElementById('eth-balance');
+const totalBalanceElement = document.getElementById('full-total-balance'); // الرصيد الإجمالي في لوحة التحكم المفصلة
+const btcBalanceElement = document.getElementById('full-btc-balance');     // رصيد BTC في لوحة التحكم المفصلة
+const ethBalanceElement = document.getElementById('full-eth-balance');     // رصيد ETH في لوحة التحكم المفصلة
+
+const balanceBarTotalElement = document.getElementById('balance-bar-total'); // الرصيد الإجمالي في الشريط المصغر
+const balanceBarBtcElement = document.getElementById('balance-bar-btc');     // رصيد BTC في الشريط المصغر
+const balanceBarEthElement = document.getElementById('balance-bar-eth');     // رصيد ETH في الشريط المصغر
+
+// عناصر التنقل الفرعي داخل الملف الشخصي
+const profileMenuButton = document.getElementById('profile-menu-button');
+const profileSubNavLinks = document.querySelectorAll('.profile-sub-nav-link');
+const profileSubSections = document.querySelectorAll('.profile-sub-section');
+
+// عناصر تفاصيل الملف الشخصي
+const profileUsernameElement = document.getElementById('profile-username');
+const profileJoinDateElement = document.getElementById('profile-join-date');
 
 
 // ----------------------------------------------------
@@ -59,20 +74,24 @@ let authToken = localStorage.getItem('authToken'); // محاولة جلب الت
 // دوال عرض الأقسام وإخفائها
 // ----------------------------------------------------
 
-// دالة لإخفاء جميع الأقسام
+// دالة لإخفاء جميع الأقسام الرئيسية
 function hideAllSections() {
     authSection.classList.add('hidden');
     linkBinanceSection.classList.add('hidden');
-    dashboardSection.classList.add('hidden');
+    profileSection.classList.add('hidden'); // القسم الجديد
     tradeSection.classList.add('hidden');
     depositWithdrawSection.classList.add('hidden');
     mobileMenu.classList.remove('active'); // إخفاء قائمة الجوال إذا كانت مفتوحة
+    balanceBarSection.classList.add('hidden'); // إخفاء شريط الرصيد المصغر
 }
 
 // دالة لإظهار قسم معين
 function showSection(sectionId) {
     hideAllSections(); // إخفاء كل شيء أولاً
     document.getElementById(sectionId).classList.remove('hidden'); // ثم إظهار القسم المطلوب
+    if (isLoggedIn && sectionId !== 'auth-section') { // إذا كان مسجل دخول وليس في صفحة المصادقة
+        balanceBarSection.classList.remove('hidden'); // أظهر شريط الرصيد المصغر
+    }
 }
 
 // دالة لتحديث حالة واجهة المستخدم بناءً على حالة تسجيل الدخول وربط باينانس
@@ -80,27 +99,25 @@ async function updateUI() {
     // إخفاء جميع الأقسام في البداية
     hideAllSections();
 
-    // إخفاء أو إظهار شريط التنقل الرئيسي (Header Nav)
-    const mainNav = document.getElementById('main-nav');
-    if (isLoggedIn) {
-        mainNav.classList.remove('hidden');
-        mobileMenuButton.classList.remove('hidden');
-    } else {
-        mainNav.classList.add('hidden');
-        mobileMenuButton.classList.add('hidden');
-    }
-
     // تحديد القسم الذي يجب عرضه
     if (!isLoggedIn) {
         showSection('auth-section'); // إذا لم يسجل دخول، أظهر قسم المصادقة
-    } else if (!isBinanceLinked) {
-        showSection('link-binance-section'); // إذا سجل دخول ولم يربط باينانس، أظهر قسم الربط
     } else {
-        // إذا سجل دخول وربط باينانس، أظهر لوحة التحكم افتراضياً
-        showSection('dashboard-section');
-        // جلب وتحديث البيانات الحقيقية بمجرد ظهور لوحة التحكم
-        fetchAndDisplayPrices();
-        fetchAndDisplayBalance();
+        // إذا سجل دخول، تحقق مما إذا كان حساب باينانس مرتبطاً
+        await checkBinanceLinkStatus(); // تحديث isBinanceLinked
+        if (!isBinanceLinked) {
+            showSection('link-binance-section'); // إذا سجل دخول ولم يربط باينانس، أظهر قسم الربط
+        } else {
+            // إذا سجل دخول وربط باينانس، أظهر قسم الملف الشخصي افتراضياً (الذي يحتوي على لوحة التحكم المفصلة)
+            showSection('profile-section');
+            // عرض القسم الفرعي الافتراضي داخل الملف الشخصي (ملفي)
+            showProfileSubSection('my-profile-details');
+            // جلب وتحديث البيانات الحقيقية بمجرد ظهور لوحة التحكم
+            fetchAndDisplayPrices();
+            fetchAndDisplayBalance();
+            // تحديث معلومات الملف الشخصي
+            updateProfileDetails();
+        }
     }
 }
 
@@ -245,7 +262,7 @@ linkBinanceForm.addEventListener('submit', async (e) => {
 // معالجة أحداث التنقل وتسجيل الخروج
 // ----------------------------------------------------
 
-// معالجة النقر على روابط التنقل
+// معالجة النقر على روابط التنقل في القائمة الجانبية
 navLinks.forEach(link => {
     link.addEventListener('click', (e) => {
         e.preventDefault();
@@ -255,9 +272,9 @@ navLinks.forEach(link => {
     });
 });
 
-// معالجة النقر على زر قائمة الجوال
+// معالجة النقر على زر قائمة الجوال (Hamburger menu)
 mobileMenuButton.addEventListener('click', () => {
-    mobileMenu.classList.toggle('active'); // تبديل حالة الفئة 'active'
+    mobileMenu.classList.toggle('active'); // تبديل حالة الفئة 'active' لإظهار/إخفاء القائمة
 });
 
 // معالجة النقر على أزرار تسجيل الخروج
@@ -274,6 +291,56 @@ logoutButtons.forEach(button => {
         authMessage.classList.add('text-blue-400'); // رسالة خروج بلون مختلف
     });
 });
+
+// ----------------------------------------------------
+// معالجة أحداث التنقل الفرعي داخل قسم الملف الشخصي
+// ----------------------------------------------------
+profileMenuButton.addEventListener('click', () => {
+    showSection('profile-section'); // عند النقر على "الملف الشخصي"، أظهر قسم الملف الشخصي
+    showProfileSubSection('my-profile-details'); // واعرض قسم "ملفي" افتراضياً
+    mobileMenu.classList.remove('active'); // إخفاء قائمة الجوال
+});
+
+profileSubNavLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetSubSectionId = link.dataset.subSection;
+        showProfileSubSection(targetSubSectionId);
+
+        // تحديث الفئة النشطة (active-sub-tab)
+        profileSubNavLinks.forEach(subLink => subLink.classList.remove('active-sub-tab', 'bg-blue-600', 'text-white', 'hover:bg-blue-700'));
+        profileSubNavLinks.forEach(subLink => subLink.classList.add('bg-gray-600', 'text-gray-300', 'hover:bg-gray-700')); // إعادة الألوان الافتراضية
+        link.classList.add('active-sub-tab', 'bg-blue-600', 'text-white'); // تفعيل اللون الأزرق للنشط
+        link.classList.remove('bg-gray-600', 'text-gray-300', 'hover:bg-gray-700'); // إزالة الألوان الافتراضية
+    });
+});
+
+// دالة لإظهار قسم فرعي معين داخل الملف الشخصي
+function showProfileSubSection(subSectionId) {
+    profileSubSections.forEach(section => section.classList.add('hidden'));
+    document.getElementById(subSectionId).classList.remove('hidden');
+
+    // تحديث الفئة النشطة في أزرار التنقل الفرعي
+    profileSubNavLinks.forEach(link => {
+        if (link.dataset.subSection === subSectionId) {
+            link.classList.add('active-sub-tab', 'bg-blue-600', 'text-white');
+            link.classList.remove('bg-gray-600', 'text-gray-300', 'hover:bg-gray-700');
+        } else {
+            link.classList.remove('active-sub-tab', 'bg-blue-600', 'text-white');
+            link.classList.add('bg-gray-600', 'text-gray-300', 'hover:bg-gray-700');
+        }
+    });
+}
+
+// دالة لتحديث تفاصيل الملف الشخصي
+function updateProfileDetails() {
+    if (currentUsername) {
+        profileUsernameElement.textContent = currentUsername;
+        // يمكن جلب تاريخ الانضمام من الخادم لاحقاً
+        profileJoinDateElement.textContent = new Date().toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+}
+
 
 // ----------------------------------------------------
 // معالجة أحداث تبويبات الشراء والبيع
@@ -397,12 +464,12 @@ async function fetchAndDisplayPrices() {
         const ethPriceData = prices.find(p => p.symbol === 'ETHUSDT');
 
         if (btcPriceData) {
-            btcPriceElement.innerHTML = `${parseFloat(btcPriceData.yourPrice).toFixed(2)} <span class="text-3xl font-normal">USDT</span>`;
+            btcPriceElement.innerHTML = `${parseFloat(btcPriceData.yourPrice).toFixed(2)} <span class="text-2xl md:text-3xl font-normal">USDT</span>`;
             btcBinancePriceElement.textContent = parseFloat(btcPriceData.binancePrice).toFixed(2);
             btcCommissionRateElement.textContent = btcPriceData.commissionRate;
         }
         if (ethPriceData) {
-            ethPriceElement.innerHTML = `${parseFloat(ethPriceData.yourPrice).toFixed(2)} <span class="text-3xl font-normal">USDT</span>`;
+            ethPriceElement.innerHTML = `${parseFloat(ethPriceData.yourPrice).toFixed(2)} <span class="text-2xl md:text-3xl font-normal">USDT</span>`;
             ethBinancePriceElement.textContent = parseFloat(ethPriceData.binancePrice).toFixed(2);
             ethCommissionRateElement.textContent = ethPriceData.commissionRate;
         }
@@ -427,9 +494,15 @@ async function fetchAndDisplayBalance() {
         const balance = data.balance; // هذا سيعود بالرصيد الداخلي حاليا
 
         if (balance) {
-            totalBalanceElement.innerHTML = `${balance.USDT.toFixed(2)} <span class="text-3xl font-normal">USDT</span>`;
-            btcBalanceElement.innerHTML = `${balance.BTC.toFixed(2)} <span class="text-2xl font-normal">BTC</span>`;
-            ethBalanceElement.innerHTML = `${balance.ETH.toFixed(2)} <span class="text-2xl font-normal">ETH</span>`;
+            // تحديث الأرصدة في لوحة التحكم المفصلة
+            totalBalanceElement.innerHTML = `${balance.USDT.toFixed(2)} <span class="text-2xl md:text-3xl font-normal">USDT</span>`;
+            btcBalanceElement.innerHTML = `${balance.BTC.toFixed(2)} <span class="text-xl md:text-2xl font-normal">BTC</span>`;
+            ethBalanceElement.innerHTML = `${balance.ETH.toFixed(2)} <span class="text-xl md:text-2xl font-normal">ETH</span>`;
+
+            // تحديث الأرصدة في شريط الرصيد المصغر
+            balanceBarTotalElement.textContent = `${balance.USDT.toFixed(2)} USDT`;
+            balanceBarBtcElement.textContent = balance.BTC.toFixed(2);
+            balanceBarEthElement.textContent = balance.ETH.toFixed(2);
         }
     } catch (error) {
         console.error('Error fetching balance:', error);
@@ -439,30 +512,47 @@ async function fetchAndDisplayBalance() {
 
 // دالة لتحديث السعر التقديري في نماذج الشراء والبيع
 function updateEstimatedPrice() {
-    const btcPrice = parseFloat(btcPriceElement.textContent.split(' ')[0]);
-    const ethPrice = parseFloat(ethPriceElement.textContent.split(' ')[0]);
+    // تأكد من أن عناصر الأسعار موجودة قبل محاولة الوصول إلى innerHTML
+    const btcPriceText = btcPriceElement ? btcPriceElement.textContent.split(' ')[0] : '0.00';
+    const ethPriceText = ethPriceElement ? ethPriceElement.textContent.split(' ')[0] : '0.00';
+
+    const btcPrice = parseFloat(btcPriceText);
+    const ethPrice = parseFloat(ethPriceText);
 
     // نموذج الشراء
-    const buySymbol = document.getElementById('buy-symbol').value;
-    const buyQuantity = parseFloat(document.getElementById('buy-quantity').value);
-    let buyEstimated = 0;
-    if (buySymbol === 'BTCUSDT') {
-        buyEstimated = buyQuantity * btcPrice;
-    } else if (buySymbol === 'ETHUSDT') {
-        buyEstimated = buyQuantity * ethPrice;
+    const buySymbolSelect = document.getElementById('buy-symbol');
+    const buyQuantityInput = document.getElementById('buy-quantity');
+    const buyEstimatedPriceSpan = document.getElementById('buy-estimated-price');
+
+    if (buySymbolSelect && buyQuantityInput && buyEstimatedPriceSpan) {
+        const buySymbol = buySymbolSelect.value;
+        const buyQuantity = parseFloat(buyQuantityInput.value);
+        let buyEstimated = 0;
+        if (buySymbol === 'BTCUSDT') {
+            buyEstimated = buyQuantity * btcPrice;
+        } else if (buySymbol === 'ETHUSDT') {
+            buyEstimated = buyQuantity * ethPrice;
+        }
+        buyEstimatedPriceSpan.textContent = isNaN(buyEstimated) ? '0.00' : buyEstimated.toFixed(2);
     }
-    document.getElementById('buy-estimated-price').textContent = isNaN(buyEstimated) ? '0.00' : buyEstimated.toFixed(2);
+
 
     // نموذج البيع
-    const sellSymbol = document.getElementById('sell-symbol').value;
-    const sellQuantity = parseFloat(document.getElementById('sell-quantity').value);
-    let sellEstimated = 0;
-    if (sellSymbol === 'BTCUSDT') {
-        sellEstimated = sellQuantity * btcPrice;
-    } else if (sellSymbol === 'ETHUSDT') {
-        sellEstimated = sellQuantity * ethPrice;
+    const sellSymbolSelect = document.getElementById('sell-symbol');
+    const sellQuantityInput = document.getElementById('sell-quantity');
+    const sellEstimatedPriceSpan = document.getElementById('sell-estimated-price');
+
+    if (sellSymbolSelect && sellQuantityInput && sellEstimatedPriceSpan) {
+        const sellSymbol = sellSymbolSelect.value;
+        const sellQuantity = parseFloat(sellQuantityInput.value);
+        let sellEstimated = 0;
+        if (sellSymbol === 'BTCUSDT') {
+            sellEstimated = sellQuantity * btcPrice;
+        } else if (sellSymbol === 'ETHUSDT') {
+            sellEstimated = sellQuantity * ethPrice;
+        }
+        sellEstimatedPriceSpan.textContent = isNaN(sellEstimated) ? '0.00' : sellEstimated.toFixed(2);
     }
-    document.getElementById('sell-estimated-price').textContent = isNaN(sellEstimated) ? '0.00' : sellEstimated.toFixed(2);
 }
 
 
@@ -487,4 +577,3 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('sell-symbol').addEventListener('change', updateEstimatedPrice);
     document.getElementById('sell-quantity').addEventListener('input', updateEstimatedPrice);
 });
-
