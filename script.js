@@ -181,9 +181,8 @@ authForm.addEventListener('submit', async (e) => {
             isLoggedIn = true;
             currentUsername = username; // حفظ اسم المستخدم
             localStorage.setItem('currentUsername', username); // حفظ في التخزين المحلي
-            // في مشروع حقيقي: هنا ستستقبل التوكن وتحفظه
-            // authToken = data.token;
-            // localStorage.setItem('authToken', authToken);
+            authToken = data.token; // حفظ التوكن المستلم
+            localStorage.setItem('authToken', authToken); // حفظ التوكن في التخزين المحلي
 
             // بعد تسجيل الدخول/التسجيل، تحقق مما إذا كان حساب باينانس مرتبطاً
             await checkBinanceLinkStatus();
@@ -203,17 +202,23 @@ authForm.addEventListener('submit', async (e) => {
 
 // دالة للتحقق من حالة ربط حساب باينانس
 async function checkBinanceLinkStatus() {
-    if (!currentUsername) {
+    if (!currentUsername || !authToken) { // يجب أن يكون هناك اسم مستخدم وتوكن
         isBinanceLinked = false;
         return;
     }
     try {
-        // هنا نستدعي نقطة نهاية جديدة في الواجهة الخلفية للتحقق
-        // هذه النقطة ستتحقق مما إذا كان لدى المستخدم مفاتيح API مخزنة
-        const response = await fetch(`${BACKEND_URL}/api/user/check-binance-link/${currentUsername}`);
+        const response = await fetch(`${BACKEND_URL}/api/user/check-binance-link/${currentUsername}`, {
+            headers: {
+                'Authorization': `Bearer ${authToken}` // إرسال التوكن
+            }
+        });
         if (!response.ok) {
-            // إذا لم تكن الاستجابة 200 OK، اعتبرها غير مرتبطة
+            // إذا لم تكن الاستجابة 200 OK، اعتبرها غير مرتبطة (أو التوكن غير صالح)
             isBinanceLinked = false;
+            if (response.status === 401 || response.status === 403) {
+                console.warn('Authentication failed for Binance link check. Logging out.');
+                logoutUser(); // تسجيل الخروج إذا كان التوكن غير صالح
+            }
             return;
         }
         const data = await response.json();
@@ -238,8 +243,8 @@ linkBinanceForm.addEventListener('submit', async (e) => {
         const response = await fetch(`${BACKEND_URL}/api/user/link-binance`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
-                // 'Authorization': `Bearer ${authToken}` // للتوثيق لاحقاً
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken}` // إرسال التوكن
             },
             body: JSON.stringify({ username: currentUsername, apiKey, secretKey })
         });
@@ -256,6 +261,10 @@ linkBinanceForm.addEventListener('submit', async (e) => {
             linkBinanceMessage.textContent = data.message;
             linkBinanceMessage.classList.remove('text-green-400');
             linkBinanceMessage.classList.add('text-red-400');
+            if (response.status === 401 || response.status === 403) {
+                console.warn('Authentication failed during Binance linking. Logging out.');
+                logoutUser(); // تسجيل الخروج إذا كان التوكن غير صالح
+            }
         }
     } catch (error) {
         console.error('Error linking Binance:', error);
@@ -300,19 +309,23 @@ mobileMenuButton.addEventListener('click', () => {
     }
 });
 
+// دالة موحدة لتسجيل الخروج
+function logoutUser() {
+    isLoggedIn = false;
+    isBinanceLinked = false;
+    currentUsername = null;
+    authToken = null;
+    localStorage.removeItem('currentUsername'); // مسح من التخزين المحلي
+    localStorage.removeItem('authToken'); // مسح التوكن
+    updateUI(); // تحديث الواجهة للعودة إلى صفحة تسجيل الدخول
+    authMessage.textContent = 'تم تسجيل الخروج بنجاح.';
+    authMessage.classList.remove('text-green-400', 'text-red-400');
+    authMessage.classList.add('text-blue-400'); // رسالة خروج بلون مختلف
+}
+
 // معالجة النقر على أزرار تسجيل الخروج
 logoutButtons.forEach(button => {
-    button.addEventListener('click', () => {
-        isLoggedIn = false;
-        isBinanceLinked = false;
-        currentUsername = null;
-        localStorage.removeItem('currentUsername'); // مسح من التخزين المحلي
-        localStorage.removeItem('authToken'); // مسح التوكن
-        updateUI(); // تحديث الواجهة للعودة إلى صفحة تسجيل الدخول
-        authMessage.textContent = 'تم تسجيل الخروج بنجاح.';
-        authMessage.classList.remove('text-green-400');
-        authMessage.classList.add('text-blue-400'); // رسالة خروج بلون مختلف
-    });
+    button.addEventListener('click', logoutUser);
 });
 
 // ----------------------------------------------------
@@ -392,6 +405,23 @@ sellTab.addEventListener('click', () => {
 // معالجة أحداث التداول (الشراء والبيع)
 // ----------------------------------------------------
 
+// دالة مساعدة لإرسال طلبات fetch مع التوكن
+async function authenticatedFetch(url, options = {}) {
+    const headers = {
+        ...options.headers,
+        'Authorization': `Bearer ${authToken}` // إضافة التوكن إلى رأس الطلب
+    };
+    const response = await fetch(url, { ...options, headers });
+
+    // التعامل مع الأخطاء 401/403 (عدم التوثيق/عدم التصريح)
+    if (response.status === 401 || response.status === 403) {
+        console.warn('Authentication failed for request. Logging out.');
+        logoutUser(); // تسجيل الخروج تلقائياً
+        throw new Error('Authentication failed.');
+    }
+    return response;
+}
+
 // معالجة إرسال نموذج الشراء
 buyForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -402,11 +432,10 @@ buyForm.addEventListener('submit', async (e) => {
     messageElement.textContent = 'جاري تنفيذ أمر الشراء...';
 
     try {
-        const response = await fetch(`${BACKEND_URL}/api/trade/order`, {
+        const response = await authenticatedFetch(`${BACKEND_URL}/api/trade/order`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
-                // 'Authorization': `Bearer ${authToken}` // للتوثيق لاحقاً
             },
             body: JSON.stringify({ username: currentUsername, symbol, side: 'BUY', quantity: parseFloat(quantity) })
         });
@@ -426,9 +455,11 @@ buyForm.addEventListener('submit', async (e) => {
         }
     } catch (error) {
         console.error('Error during buy order:', error);
-        messageElement.textContent = 'حدث خطأ غير متوقع أثناء الشراء.';
-        messageElement.classList.remove('text-green-400');
-        messageElement.classList.add('text-red-400');
+        if (error.message !== 'Authentication failed.') { // لا تعرض رسالة خطأ إذا كان السبب هو تسجيل الخروج التلقائي
+            messageElement.textContent = 'حدث خطأ غير متوقع أثناء الشراء.';
+            messageElement.classList.remove('text-green-400');
+            messageElement.classList.add('text-red-400');
+        }
     }
 });
 
@@ -442,11 +473,10 @@ sellForm.addEventListener('submit', async (e) => {
     messageElement.textContent = 'جاري تنفيذ أمر البيع...';
 
     try {
-        const response = await fetch(`${BACKEND_URL}/api/trade/order`, {
+        const response = await authenticatedFetch(`${BACKEND_URL}/api/trade/order`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
-                // 'Authorization': `Bearer ${authToken}` // للتوثيق لاحقاً
             },
             body: JSON.stringify({ username: currentUsername, symbol, side: 'SELL', quantity: parseFloat(quantity) })
         });
@@ -463,12 +493,19 @@ sellForm.addEventListener('submit', async (e) => {
             messageElement.textContent = data.message;
             messageElement.classList.remove('text-green-400');
             messageElement.classList.add('text-red-400');
+            if (error.message !== 'Authentication failed.') { // لا تعرض رسالة خطأ إذا كان السبب هو تسجيل الخروج التلقائي
+                messageElement.textContent = 'حدث خطأ غير متوقع أثناء البيع.';
+                messageElement.classList.remove('text-green-400');
+                messageElement.classList.add('text-red-400');
+            }
         }
     } catch (error) {
         console.error('Error during sell order:', error);
-        messageElement.textContent = 'حدث خطأ غير متوقع أثناء البيع.';
-        messageElement.classList.remove('text-green-400');
-        messageElement.classList.add('text-red-400');
+        if (error.message !== 'Authentication failed.') { // لا تعرض رسالة خطأ إذا كان السبب هو تسجيل الخروج التلقائي
+            messageElement.textContent = 'حدث خطأ غير متوقع أثناء البيع.';
+            messageElement.classList.remove('text-green-400');
+            messageElement.classList.add('text-red-400');
+        }
     }
 });
 
@@ -479,6 +516,7 @@ sellForm.addEventListener('submit', async (e) => {
 // دالة لجلب وتحديث أسعار العملات الحقيقية من الواجهة الخلفية
 async function fetchAndDisplayPrices() {
     try {
+        // لا تحتاج هذه النقطة إلى توثيق، لذا نستخدم fetch مباشرة
         const response = await fetch(`${BACKEND_URL}/api/market/prices`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -489,14 +527,14 @@ async function fetchAndDisplayPrices() {
         const ethPriceData = prices.find(p => p.symbol === 'ETHUSDT');
 
         if (btcPriceData) {
-            btcPriceElement.innerHTML = `${parseFloat(btcPriceData.yourPrice).toFixed(2)} <span class="text-2xl md:text-3xl font-normal">USDT</span>`;
-            btcBinancePriceElement.textContent = parseFloat(btcPriceData.binancePrice).toFixed(2);
-            btcCommissionRateElement.textContent = btcPriceData.commissionRate;
+            if (btcPriceElement) btcPriceElement.innerHTML = `${parseFloat(btcPriceData.yourPrice).toFixed(2)} <span class="text-2xl md:text-3xl font-normal">USDT</span>`;
+            if (btcBinancePriceElement) btcBinancePriceElement.textContent = parseFloat(btcPriceData.binancePrice).toFixed(2);
+            if (btcCommissionRateElement) btcCommissionRateElement.textContent = btcPriceData.commissionRate;
         }
         if (ethPriceData) {
-            ethPriceElement.innerHTML = `${parseFloat(ethPriceData.yourPrice).toFixed(2)} <span class="text-2xl md:text-3xl font-normal">USDT</span>`;
-            ethBinancePriceElement.textContent = parseFloat(ethPriceData.binancePrice).toFixed(2);
-            ethCommissionRateElement.textContent = ethPriceData.commissionRate;
+            if (ethPriceElement) ethPriceElement.innerHTML = `${parseFloat(ethPriceData.yourPrice).toFixed(2)} <span class="text-2xl md:text-3xl font-normal">USDT</span>`;
+            if (ethBinancePriceElement) ethBinancePriceElement.textContent = parseFloat(ethPriceData.binancePrice).toFixed(2);
+            if (ethCommissionRateElement) ethCommissionRateElement.textContent = ethPriceData.commissionRate;
         }
 
         updateEstimatedPrice(); // تحديث السعر التقديري بعد جلب الأسعار
@@ -508,10 +546,11 @@ async function fetchAndDisplayPrices() {
 
 // دالة لجلب وتحديث أرصدة المستخدم الحقيقية من الواجهة الخلفية
 async function fetchAndDisplayBalance() {
-    if (!isLoggedIn || !currentUsername) return; // لا تجلب الرصيد إذا لم يكن المستخدم مسجلاً
+    if (!isLoggedIn || !currentUsername || !authToken) return; // لا تجلب الرصيد إذا لم يكن المستخدم مسجلاً أو لا يوجد توكن
 
     try {
-        const response = await fetch(`${BACKEND_URL}/api/user/binance-balance/${currentUsername}`);
+        // هذه النقطة تتطلب توثيق، لذا نستخدم authenticatedFetch
+        const response = await authenticatedFetch(`${BACKEND_URL}/api/user/binance-balance/${currentUsername}`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -531,7 +570,7 @@ async function fetchAndDisplayBalance() {
         }
     } catch (error) {
         console.error('Error fetching balance:', error);
-        // يمكنك عرض رسالة خطأ للمستخدم هنا
+        // رسالة الخطأ يتم التعامل معها بواسطة authenticatedFetch
     }
 }
 
@@ -587,7 +626,7 @@ function updateEstimatedPrice() {
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM Content Loaded. Initializing UI...');
     // التحقق من حالة تسجيل الدخول وربط باينانس عند تحميل الصفحة
-    if (currentUsername) {
+    if (currentUsername && authToken) { // تحقق من وجود التوكن أيضاً
         isLoggedIn = true;
         await checkBinanceLinkStatus(); // تحقق من ربط باينانس بناءً على اسم المستخدم
     }
