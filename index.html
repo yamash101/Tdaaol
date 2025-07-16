@@ -10,6 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <!-- أيقونات Font Awesome (لأيقونات احترافية) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- مكتبة Chart.js للرسوم البيانية -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- ربط ملف CSS المخصص (للتصميمات الإضافية والتحسينات الدقيقة) -->
     <link rel="stylesheet" href="style.css">
     <style>
@@ -294,18 +296,18 @@
     <main class="flex-grow container mx-auto p-4 md:p-6 lg:p-8 flex flex-col lg:flex-row gap-6">
         <!-- العمود الأيسر: الرسم البياني، دفتر الأوامر -->
         <div class="flex-1 flex flex-col gap-6">
-            <!-- قسم الرسم البياني (Placeholder) -->
+            <!-- قسم الرسم البياني (Chart.js Canvas) -->
             <section class="panel bg-gray-900 p-6 flex-grow">
                 <h2 class="text-xl md:text-2xl font-bold text-white mb-4">الرسم البياني <span id="chart-pair-title" class="text-blue-400 text-lg font-light">BTC/USDT</span></h2>
                 <div class="h-64 md:h-96 bg-gray-700 rounded-lg flex items-center justify-center text-gray-400 text-lg border border-gray-600 shadow-inner">
-                    <p>مكان الرسم البياني هنا (يمكن دمج TradingView Widget أو Chart.js)</p>
+                    <canvas id="myTradingChart"></canvas> <!-- مكان الرسم البياني بواسطة Chart.js -->
                 </div>
                 <div class="flex flex-wrap gap-3 mt-4 justify-center">
-                    <button class="timeframe-button bg-blue-600 hover:bg-blue-700 text-white text-sm py-2 px-4 rounded-full transition-colors duration-200">1د</button>
-                    <button class="timeframe-button bg-gray-700 hover:bg-gray-600 text-gray-300 text-sm py-2 px-4 rounded-full transition-colors duration-200">5د</button>
-                    <button class="timeframe-button bg-gray-700 hover:bg-gray-600 text-gray-300 text-sm py-2 px-4 rounded-full transition-colors duration-200">1س</button>
-                    <button class="timeframe-button bg-gray-700 hover:bg-gray-600 text-gray-300 text-sm py-2 px-4 rounded-full transition-colors duration-200">4س</button>
-                    <button class="timeframe-button bg-gray-700 hover:bg-gray-600 text-gray-300 text-sm py-2 px-4 rounded-full transition-colors duration-200">1ي</button>
+                    <button class="timeframe-button bg-blue-600 hover:bg-blue-700 text-white text-sm py-2 px-4 rounded-full transition-colors duration-200" data-timeframe="1m">1د</button>
+                    <button class="timeframe-button bg-gray-700 hover:bg-gray-600 text-gray-300 text-sm py-2 px-4 rounded-full transition-colors duration-200" data-timeframe="5m">5د</button>
+                    <button class="timeframe-button bg-gray-700 hover:bg-gray-600 text-gray-300 text-sm py-2 px-4 rounded-full transition-colors duration-200" data-timeframe="1h">1س</button>
+                    <button class="timeframe-button bg-gray-700 hover:bg-gray-600 text-gray-300 text-sm py-2 px-4 rounded-full transition-colors duration-200" data-timeframe="4h">4س</button>
+                    <button class="timeframe-button bg-gray-700 hover:bg-gray-600 text-gray-300 text-sm py-2 px-4 rounded-full transition-colors duration-200" data-timeframe="1d">1ي</button>
                 </div>
             </section>
 
@@ -398,8 +400,15 @@
                     <div>
                         <label for="buy-quantity" class="block text-gray-300 text-sm font-bold mb-2">الكمية:</label>
                         <input type="number" id="buy-quantity" name="quantity" step="any" class="w-full py-2 px-3 rounded-lg focus:ring-blue-500 bg-gray-700 text-gray-200" placeholder="أدخل الكمية" required>
+                        <div class="flex justify-between mt-2 text-xs">
+                            <button type="button" class="quantity-percent-button bg-gray-700 hover:bg-gray-600 text-gray-300 px-3 py-1 rounded-full" data-percent="25" data-form="buy">25%</button>
+                            <button type="button" class="quantity-percent-button bg-gray-700 hover:bg-gray-600 text-gray-300 px-3 py-1 rounded-full" data-percent="50" data-form="buy">50%</button>
+                            <button type="button" class="quantity-percent-button bg-gray-700 hover:bg-gray-600 text-gray-300 px-3 py-1 rounded-full" data-percent="75" data-form="buy">75%</button>
+                            <button type="button" class="quantity-percent-button bg-gray-700 hover:bg-gray-600 text-gray-300 px-3 py-1 rounded-full" data-percent="100" data-form="buy">100%</button>
+                        </div>
                     </div>
                     <p class="text-gray-400 text-sm">السعر التقديري: <span id="buy-estimated-price" class="font-extrabold text-white">0.00</span> USDT</p>
+                    <p class="text-gray-400 text-sm">الإجمالي: <span id="buy-total-amount" class="font-extrabold text-white">0.00</span> USDT</p>
                     <button type="submit" class="btn-buy font-bold py-2 px-4 rounded-full w-full transition-all duration-300 transform hover:scale-105 shadow-md">
                         <i class="fas fa-arrow-circle-up ml-2"></i> تأكيد الشراء
                     </button>
@@ -429,8 +438,15 @@
                     <div>
                         <label for="sell-quantity" class="block text-gray-300 text-sm font-bold mb-2">الكمية:</label>
                         <input type="number" id="sell-quantity" name="quantity" step="any" class="w-full py-2 px-3 rounded-lg focus:ring-red-500 bg-gray-700 text-gray-200" placeholder="أدخل الكمية" required>
+                        <div class="flex justify-between mt-2 text-xs">
+                            <button type="button" class="quantity-percent-button bg-gray-700 hover:bg-gray-600 text-gray-300 px-3 py-1 rounded-full" data-percent="25" data-form="sell">25%</button>
+                            <button type="button" class="quantity-percent-button bg-gray-700 hover:bg-gray-600 text-gray-300 px-3 py-1 rounded-full" data-percent="50" data-form="sell">50%</button>
+                            <button type="button" class="quantity-percent-button bg-gray-700 hover:bg-gray-600 text-gray-300 px-3 py-1 rounded-full" data-percent="75" data-form="sell">75%</button>
+                            <button type="button" class="quantity-percent-button bg-gray-700 hover:bg-gray-600 text-gray-300 px-3 py-1 rounded-full" data-percent="100" data-form="sell">100%</button>
+                        </div>
                     </div>
                     <p class="text-gray-400 text-sm">السعر التقديري: <span id="sell-estimated-price" class="font-extrabold text-white">0.00</span> USDT</p>
+                    <p class="text-gray-400 text-sm">الإجمالي: <span id="sell-total-amount" class="font-extrabold text-white">0.00</span> USDT</p>
                     <button type="submit" class="btn-sell font-bold py-2 px-4 rounded-full w-full transition-all duration-300 transform hover:scale-105 shadow-md">
                         <i class="fas fa-arrow-circle-down ml-2"></i> تأكيد البيع
                     </button>
