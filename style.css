@@ -1,15 +1,12 @@
-/* ملف style.css - تصميمات إضافية لجعل الواجهة أفخم وأكثر جاوبية */
+/* ملف style.css - تصميمات مخصصة لتعزيز المظهر الفخم والعالمي */
 
-/* استيراد خطوط جوجل (يمكنك تفعيلها هنا إذا لم تكن في HTML) */
-/* @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap'); */
-/* @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap'); */
-
-/* تخصيص الخطوط الأساسية */
+/* تخصيص الخطوط الأساسية والاتجاه */
 body {
-    font-family: 'Inter', sans-serif; /* يمكن استخدام 'Cairo', 'Noto Sans Arabic' لخط عربي أفضل */
+    font-family: 'Inter', sans-serif; /* خط عصري ونظيف */
     direction: rtl; /* لضمان اتجاه النص من اليمين لليسار */
     text-align: right; /* لمحاذاة النص لليمين بشكل افتراضي */
-    background-color: #1a202c; /* خلفية داكنة جداً ومريحة للعين */
+    background-color: #0a0c10; /* خلفية داكنة جداً (Dark Theme) */
+    color: #e0e6f0; /* لون نص فاتح ومريح للعين */
 }
 
 /* تخصيص شريط التمرير (Scrollbar) لجعل الواجهة أفخم */
@@ -17,54 +14,105 @@ body {
     width: 8px;
 }
 ::-webkit-scrollbar-track {
-    background: #171923; /* لون خلفية شريط التمرير (أغمق) */
+    background: #12151a; /* لون خلفية شريط التمرير (أغمق) */
 }
 ::-webkit-scrollbar-thumb {
-    background: #4a5568; /* لون مقبض شريط التمرير */
+    background: #3a404b; /* لون مقبض شريط التمرير */
     border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-    background: #6b7280; /* لون مقبض شريط التمرير عند التحويم */
+    background: #5a606b; /* لون مقبض شريط التمرير عند التحويم */
 }
 
-/* تأثيرات الانتقال للأزرار والعناصر التفاعلية (مدمجة مع Tailwind) */
-/* .transition-all */
-/* .transform */
-/* .hover\:scale-105:hover */
-
-/* تخصيص أزرار التبويبات (شراء/بيع) لجعلها تبدو كأزرار حقيقية وتفاعلية */
-#buy-tab, #sell-tab {
-    border: none;
+/* تخصيص قائمة الجوال لتظهر كشريط جانبي احترافي */
+#mobile-menu {
+    position: fixed;
+    top: 0;
+    right: -300px; /* مخفية في البداية */
+    width: 300px;
+    height: 100%;
+    background-color: #1a202c; /* لون أغمق قليلاً من الخلفية الرئيسية */
+    padding: 2rem;
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5); /* ظل عميق لإبرازها */
+    transition: right 0.3s ease-in-out; /* انتقال سلس للظهور والاختفاء */
+    z-index: 50; /* تأكد أنها فوق المحتوى الآخر */
+    display: flex; /* لترتيب العناصر عمودياً */
+    flex-direction: column;
+}
+#mobile-menu.active {
+    right: 0; /* تظهر عند إضافة فئة 'active' */
+}
+#mobile-menu .close-button {
+    position: absolute;
+    top: 1rem;
+    left: 1rem; /* زر إغلاق في الزاوية العلوية اليسرى */
+    color: #cbd5e0; /* لون فاتح */
+    font-size: 1.5rem;
     cursor: pointer;
-    outline: none;
+    background: none; /* إزالة خلفية الزر الافتراضية */
+    border: none; /* إزالة حدود الزر الافتراضية */
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+#mobile-menu .close-button:hover {
+    background-color: #2d3748; /* خلفية عند التحويم */
+}
+#mobile-menu nav {
+    margin-top: 2rem;
+    flex-grow: 1; /* لتأخذ المساحة المتاحة وتدفع زر تسجيل الخروج للأسفل */
+}
+#mobile-menu .nav-link, #mobile-menu button {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* محاذاة لليمين للنص والأيقونة */
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 0.75rem;
     font-size: 1.125rem; /* text-lg */
-    padding: 1rem 2rem; /* py-4 px-8 */
-    border-radius: 9999px; /* rounded-full */
-    white-space: nowrap; /* منع النص من الالتفاف */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* ظل خفيف */
-    /* إضافة تأثيرات الضغط */
-    transition: all 0.2s ease-in-out;
-    transform: translateY(0);
+    font-weight: 600;
 }
-
-#buy-tab:active, #sell-tab:active {
-    transform: translateY(2px); /* تأثير ضغط خفيف */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+#mobile-menu .nav-link i, #mobile-menu button i {
+    margin-right: 0.5rem; /* مسافة بين الأيقونة والنص */
+    margin-left: 0; /* إلغاء الهامش الأيسر إذا كان موجوداً من Tailwind */
 }
-
-
-/* حالة التبويب النشط */
-#buy-tab.active-tab {
-    background-color: #2563eb; /* أزرق داكن */
+#mobile-menu .nav-link {
+    color: #a0aec0; /* لون رمادي فاتح للروابط */
+    transition: background-color 0.2s, color 0.2s;
+}
+#mobile-menu .nav-link:hover {
+    background-color: #2d3748; /* خلفية عند التحويم */
+    color: #63b3ed; /* أزرق فاتح عند التحويم */
+}
+#mobile-menu #mobile-logout-button {
+    background-color: #e53e3e; /* أحمر للخروج */
     color: white;
-    box-shadow: 0 8px 15px rgba(37, 99, 235, 0.4); /* ظل أزرق أعمق */
+    justify-content: center; /* توسيط زر الخروج */
+    margin-top: auto; /* لدفعه إلى الأسفل */
+}
+#mobile-menu #mobile-logout-button:hover {
+    background-color: #c53030;
 }
 
-#sell-tab.active-tab {
-    background-color: #dc2626; /* أحمر داكن */
-    color: white;
-    box-shadow: 0 8px 15px rgba(220, 38, 38, 0.4); /* ظل أحمر أعمق */
+/* تخصيص البطاقات (Panels) */
+.panel {
+    background-color: #1a202c; /* خلفية الألواح */
+    border-radius: 0.75rem; /* rounded-xl */
+    padding: 1.5rem; /* p-6 */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.15); /* ظل عميق */
+    border: 1px solid #2d3748; /* حدود خفيفة */
+    transition: transform 0.2s ease-in-out; /* انتقال سلس عند التحويم */
 }
+.panel:hover {
+    transform: translateY(-2px); /* تأثير رفع خفيف عند التحويم */
+}
+
+/* ألوان الحدود للألواح (محددة بـ Tailwind) */
+/* .border-blue-500 { border-color: #3b82f6; } */
+/* .border-green-500 { border-color: #10b981; } */
+/* .border-yellow-500 { border-color: #f59e0b; } */
+/* .border-purple-500 { border-color: #8b5cf6; } */
+/* .border-red-500 { border-color: #ef4444; } */
 
 /* تخصيص حقول الإدخال والاختيار */
 input[type="text"],
@@ -73,7 +121,7 @@ input[type="number"],
 select {
     background-color: #2d3748; /* خلفية أغمق قليلاً */
     border-color: #4a5568; /* حدود أغمق */
-    color: #e2e8f0; /* لون نص فاتح */
+    color: #e0e6f0; /* لون نص فاتح */
     padding: 0.75rem 1rem; /* py-3 px-4 */
     border-radius: 0.5rem; /* rounded-lg */
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3); /* ظل داخلي */
@@ -83,34 +131,98 @@ input[type="text"]:focus,
 input[type="password"]:focus,
 input[type="number"]:focus,
 select:focus {
-    border-color: #3b82f6; /* لون حدود التركيز */
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5); /* ظل التركيز */
+    border-color: #63b3ed; /* لون حدود التركيز (أزرق فاتح) */
+    box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.5); /* ظل التركيز */
+    outline: none; /* إزالة الخط الأزرق الافتراضي للمتصفح */
 }
 
-/* تخصيص الجداول */
+/* تخصيص أزرار التبويبات (شراء/بيع) */
+.tab-button {
+    border: none;
+    cursor: pointer;
+    outline: none;
+    font-size: 1.125rem; /* text-lg */
+    padding: 1rem 2rem; /* py-4 px-8 */
+    border-radius: 0.75rem; /* rounded-xl */
+    white-space: nowrap;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease-in-out;
+    transform: translateY(0);
+}
+.tab-button:active {
+    transform: translateY(2px); /* تأثير ضغط خفيف */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+.tab-button.active-tab {
+    background-color: #3b82f6; /* أزرق داكن */
+    color: white;
+    box-shadow: 0 8px 15px rgba(59, 130, 246, 0.4); /* ظل أزرق أعمق */
+}
+.tab-button:not(.active-tab) {
+    background-color: #2d3748; /* رمادي داكن للخامل */
+    color: #a0aec0; /* نص رمادي فاتح */
+}
+.tab-button:not(.active-tab):hover {
+    background-color: #4a5568;
+    color: #e0e6f0;
+}
+
+/* أزرار الشراء والبيع داخل النماذج */
+.btn-buy {
+    background-color: #10b981; /* أخضر */
+    color: white;
+    font-weight: bold;
+    padding: 0.75rem 1.5rem; /* py-3 px-6 */
+    border-radius: 9999px; /* rounded-full */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease-in-out;
+}
+.btn-buy:hover {
+    background-color: #059669; /* أخضر أغمق عند التحويم */
+    transform: translateY(-2px); /* تأثير رفع */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+}
+.btn-sell {
+    background-color: #ef4444; /* أحمر */
+    color: white;
+    font-weight: bold;
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease-in-out;
+}
+.btn-sell:hover {
+    background-color: #dc2626; /* أحمر أغمق عند التحويم */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* الجداول */
 table {
     width: 100%;
     border-collapse: collapse;
 }
-
 th, td {
-    padding: 1rem 1.5rem; /* px-6 py-4 */
+    padding: 1rem 1.5rem;
     text-align: right;
-    border-bottom: 1px solid #4a5568; /* حدود أغمق */
+    border-bottom: 1px solid #2d3748;
 }
-
 thead th {
-    background-color: #2d3748; /* خلفية رأس الجدول */
-    color: #e2e8f0; /* لون نص رأس الجدول */
+    background-color: #1a202c;
+    color: #a0aec0;
     font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.875rem;
 }
-
 tbody tr:nth-child(even) {
-    background-color: #2d3748; /* لون خلفية الصفوف الزوجية */
+    background-color: #1a202c;
 }
-
 tbody tr:hover {
-    background-color: #3b4552; /* لون خلفية الصف عند التحويم */
+    background-color: #2d3748;
+}
+tbody td {
+    color: #e0e6f0;
+    font-size: 0.95rem;
 }
 
 /* إخفاء العناصر (مهم لـ JavaScript) */
@@ -118,40 +230,17 @@ tbody tr:hover {
     display: none !important;
 }
 
-/* لجعل الأقسام تملأ الارتفاع المتاح في flex container */
-.h-full {
-    height: 100%;
-}
-
-/* تخصيص الأزرار ذات الظل */
-.shadow-md {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-.shadow-lg {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
-}
-.shadow-xl {
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
-}
-.shadow-2xl {
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-}
-
-/* تخصيص أزرار التنقل الفرعية في الملف الشخصي */
-.profile-sub-nav-link {
+/* تخصيص أزرار النسبة المئوية للكمية */
+.quantity-percent-button {
     border: none;
     cursor: pointer;
     outline: none;
-    font-size: 0.875rem; /* text-sm */
-    padding: 0.5rem 1rem; /* py-2 px-4 */
+    font-size: 0.75rem; /* text-xs */
+    padding: 0.25rem 0.75rem; /* px-3 py-1 */
     border-radius: 9999px; /* rounded-full */
-    white-space: nowrap;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: all 0.2s ease-in-out;
+    transition: background-color 0.2s, color 0.2s;
 }
-
-.profile-sub-nav-link.active-sub-tab {
-    background-color: #2563eb; /* أزرق داكن */
-    color: white;
-    box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);
+.quantity-percent-button:hover {
+    background-color: #4a5568;
+    color: #e0e6f0;
 }
