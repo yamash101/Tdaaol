@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة التداول العالمية - إيداع وسحب</title>
+    <!-- استيراد Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- خط Inter (للمظهر العصري والاحترافي) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- أيقونات Font Awesome (لأيقونات احترافية) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- ربط ملف CSS المخصص (للتصميمات الإضافية والتحسينات الدقيقة) -->
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* إعدادات الخط الأساسية والاتجاه */
+        body {
+            font-family: 'Inter', sans-serif;
+            direction: rtl;
+            text-align: right;
+            background-color: #0a0c10; /* خلفية داكنة جداً جداً */
+            color: #e0e6f0; /* لون نص فاتح ومريح للعين */
+        }
+        /* تخصيص شريط التمرير */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #12151a; }
+        ::-webkit-scrollbar-thumb { background: #3a404b; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #5a606b; }
+
+        /* تخصيص قائمة الجوال لتظهر كشريط جانبي */
+        #mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -300px; /* مخفية في البداية */
+            width: 300px;
+            height: 100%;
+            background-color: #1a202c; /* لون أغمق قليلاً من الخلفية */
+            padding: 2rem;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5);
+            transition: right 0.3s ease-in-out;
+            z-index: 50; /* تأكد أنها فوق المحتوى */
+            display: flex; /* لترتيب العناصر عمودياً */
+            flex-direction: column;
+        }
+        #mobile-menu.active {
+            right: 0; /* تظهر عند التفعيل */
+        }
+        #mobile-menu .close-button {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            color: #cbd5e0;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        #mobile-menu nav {
+            margin-top: 2rem;
+            flex-grow: 1; /* لتأخذ المساحة المتاحة */
+        }
+        #mobile-menu .nav-link, #mobile-menu button {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end; /* محاذاة لليمين */
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.75rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+        #mobile-menu .nav-link i, #mobile-menu button i {
+            margin-right: 0.5rem; /* مسافة بين الأيقونة والنص */
+            margin-left: 0; /* إلغاء الهامش الأيسر إذا كان موجوداً */
+        }
+        #mobile-menu .nav-link {
+            color: #a0aec0; /* لون رمادي فاتح للروابط */
+            transition: background-color 0.2s, color 0.2s;
+        }
+        #mobile-menu .nav-link:hover {
+            background-color: #2d3748;
+            color: #63b3ed; /* أزرق فاتح عند التحويم */
+        }
+        #mobile-menu #mobile-logout-button {
+            background-color: #e53e3e; /* أحمر للخروج */
+            color: white;
+            justify-content: center; /* توسيط زر الخروج */
+            margin-top: auto; /* لدفعه إلى الأسفل */
+        }
+        #mobile-menu #mobile-logout-button:hover {
+            background-color: #c53030;
+        }
+
+        /* تخصيص البطاقات (Panels) */
+        .panel {
+            background-color: #1a202c; /* خلفية الألواح */
+            border-radius: 0.75rem; /* rounded-xl */
+            padding: 1.5rem; /* p-6 */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.15); /* ظل عميق */
+            border: 1px solid #2d3748; /* حدود خفيفة */
+            transition: transform 0.2s ease-in-out; /* انتقال سلس عند التحويم */
+        }
+        .panel:hover {
+            transform: translateY(-2px); /* تأثير رفع خفيف عند التحويم */
+        }
+
+        /* الجداول */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 1rem 1.5rem;
+            text-align: right;
+            border-bottom: 1px solid #2d3748;
+        }
+        thead th {
+            background-color: #1a202c;
+            color: #a0aec0;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+        }
+        tbody tr:nth-child(even) {
+            background-color: #1a202c;
+        }
+        tbody tr:hover {
+            background-color: #2d3748;
+        }
+        tbody td {
+            color: #e0e6f0;
+            font-size: 0.95rem;
+        }
+
+        /* إخفاء العناصر (مهم لـ JavaScript) */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Deposit/Withdraw specific styles */
+        .deposit-withdraw-tab-button {
+            border: none;
+            cursor: pointer;
+            outline: none;
+            font-size: 1.125rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            white-space: nowrap;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: all 0.2s ease-in-out;
+        }
+        .deposit-withdraw-tab-button.active-tab {
+            background-color: #3b82f6;
+            color: white;
+            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.4);
+        }
+        .deposit-withdraw-tab-button:not(.active-tab) {
+            background-color: #2d3748;
+            color: #a0aec0;
+        }
+        .deposit-withdraw-tab-button:not(.active-tab):hover {
+            background-color: #4a5568;
+            color: #e0e6f0;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            background-color: #2d3748;
+            border-color: #4a5568;
+            color: #e0e6f0;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus {
+            border-color: #63b3ed;
+            box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.5);
+            outline: none;
+        }
+        .btn-primary {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+    </style>
+</head>
+<body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col">
+
+    <!-- رأس الصفحة (Header) - شريط التنقل العلوي الفخم -->
+    <header class="bg-gray-900 p-4 md:p-6 shadow-xl z-30 relative">
+        <div class="container mx-auto flex justify-between items-center">
+            <!-- شعار الموقع -->
+            <a href="index.html" class="flex items-center space-x-2">
+                <i class="fas fa-chart-line text-blue-500 text-3xl md:text-4xl"></i>
+                <h1 class="text-3xl md:text-4xl font-extrabold text-white">بوابة التداول <span class="text-blue-400 text-xl md:text-2xl font-light">العالمية</span></h1>
+            </a>
+            
+            <!-- زر قائمة الجوال (Hamburger menu) -->
+            <button id="mobile-menu-button" class="text-gray-300 focus:outline-none p-2 rounded-md hover:bg-gray-700 transition-colors duration-300">
+                <i class="fas fa-bars text-3xl md:text-4xl"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- قائمة الجوال الجانبية المنبثقة (Side Menu) -->
+    <div id="mobile-menu" class="hidden">
+        <button class="close-button" id="close-mobile-menu"><i class="fas fa-times"></i></button>
+        <nav class="flex flex-col space-y-4 text-center">
+            <a href="index.html" class="nav-link"><i class="fas fa-chart-line ml-2"></i> التداول الفوري</a>
+            <a href="profile.html" class="nav-link"><i class="fas fa-user-circle ml-2"></i> الملف الشخصي</a>
+            <a href="deposit_withdraw.html" class="nav-link text-blue-400 font-bold"><i class="fas fa-money-bill-transfer ml-2"></i> إيداع/سحب</a>
+            <button id="mobile-logout-button" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-full shadow-md transition-all duration-300 transform hover:scale-105 w-full">
+                <i class="fas fa-sign-out-alt ml-2"></i> تسجيل الخروج
+            </button>
+        </nav>
+    </div>
+
+    <!-- شريط الرصيد المصغر (يظهر تحت الهيدر بعد تسجيل الدخول) -->
+    <section id="balance-bar-section" class="hidden bg-gray-800 p-3 shadow-md text-center text-gray-200 z-20 relative">
+        <div class="container mx-auto flex flex-wrap justify-around items-center text-sm md:text-base gap-2">
+            <p class="font-semibold">الرصيد الإجمالي: <span id="balance-bar-total" class="text-green-400 font-bold">0.00 USDT</span></p>
+            <p class="font-semibold">BTC: <span id="balance-bar-btc" class="text-yellow-400 font-bold">0.00</span></p>
+            <p class="font-semibold">ETH: <span id="balance-bar-eth" class="text-purple-400 font-bold">0.00</span></p>
+            <a href="deposit_withdraw.html" class="text-blue-400 hover:underline font-semibold">
+                <i class="fas fa-money-bill-transfer ml-1"></i> إيداع/سحب
+            </a>
+        </div>
+    </section>
+
+    <!-- المحتوى الرئيسي لصفحة الإيداع والسحب -->
+    <main class="flex-grow container mx-auto p-4 md:p-6 lg:p-8 flex flex-col gap-6">
+        <section class="panel bg-gray-900 p-6">
+            <h2 class="text-2xl font-bold text-white mb-6">إيداع وسحب العملات</h2>
+
+            <div class="flex justify-center mb-6">
+                <button id="deposit-tab" class="deposit-withdraw-tab-button active-tab rounded-r-none">
+                    <i class="fas fa-arrow-alt-circle-down ml-2"></i> إيداع
+                </button>
+                <button id="withdraw-tab" class="deposit-withdraw-tab-button rounded-l-none">
+                    <i class="fas fa-arrow-alt-circle-up ml-2"></i> سحب
+                </button>
+            </div>
+
+            <!-- قسم الإيداع -->
+            <div id="deposit-content">
+                <h3 class="text-xl font-bold text-white mb-4">إيداع العملات الرقمية</h3>
+                <form class="space-y-4">
+                    <div>
+                        <label for="deposit-currency" class="block text-gray-300 text-sm font-bold mb-2">اختر العملة:</label>
+                        <select id="deposit-currency" class="w-full py-2 px-3 rounded-lg focus:ring-blue-500 bg-gray-700 text-gray-200">
+                            <option value="USDT">USDT</option>
+                            <option value="BTC">BTC</option>
+                            <option value="ETH">ETH</option>
+                            <!-- يمكن إضافة المزيد من العملات هنا -->
+                        </select>
+                    </div>
+                    <div>
+                        <label for="deposit-network" class="block text-gray-300 text-sm font-bold mb-2">اختر الشبكة:</label>
+                        <select id="deposit-network" class="w-full py-2 px-3 rounded-lg focus:ring-blue-500 bg-gray-700 text-gray-200">
+                            <option value="ERC20">ERC20</option>
+                            <option value="BEP20">BEP20 (BSC)</option>
+                            <option value="TRC20">TRC20 (Tron)</option>
+                        </select>
+                    </div>
+                    <div class="bg-gray-800 p-4 rounded-lg border border-gray-700 shadow-inner">
+                        <p class="text-gray-400 text-sm mb-2">عنوان الإيداع:</p>
+                        <div class="flex items-center justify-between bg-gray-700 p-3 rounded-lg">
+                            <span id="deposit-address" class="text-yellow-400 font-mono text-sm break-all">0x123abc...</span>
+                            <button type="button" class="text-blue-400 hover:text-blue-600 text-lg ml-2" onclick="copyToClipboard('deposit-address')">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <p class="text-red-400 text-xs mt-2">تحذير: تأكد من اختيار الشبكة الصحيحة لتجنب فقدان الأموال.</p>
+                    </div>
+                    <div class="bg-gray-800 p-4 rounded-lg border border-gray-700 shadow-inner text-center">
+                        <p class="text-gray-400 text-sm mb-2">رمز QR للإيداع:</p>
+                        <img src="https://placehold.co/150x150/2d3748/a0aec0?text=QR+Code" alt="QR Code" class="mx-auto rounded-lg">
+                    </div>
+                </form>
+            </div>
+
+            <!-- قسم السحب (مخفي مبدئياً) -->
+            <div id="withdraw-content" class="hidden">
+                <h3 class="text-xl font-bold text-white mb-4">سحب العملات الرقمية</h3>
+                <form class="space-y-4">
+                    <div>
+                        <label for="withdraw-currency" class="block text-gray-300 text-sm font-bold mb-2">اختر العملة:</label>
+                        <select id="withdraw-currency" class="w-full py-2 px-3 rounded-lg focus:ring-red-500 bg-gray-700 text-gray-200">
+                            <option value="USDT">USDT</option>
+                            <option value="BTC">BTC</option>
+                            <option value="ETH">ETH</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="withdraw-network" class="block text-gray-300 text-sm font-bold mb-2">اختر الشبكة:</label>
+                        <select id="withdraw-network" class="w-full py-2 px-3 rounded-lg focus:ring-red-500 bg-gray-700 text-gray-200">
+                            <option value="ERC20">ERC20</option>
+                            <option value="BEP20">BEP20 (BSC)</option>
+                            <option value="TRC20">TRC20 (Tron)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="withdraw-address" class="block text-gray-300 text-sm font-bold mb-2">عنوان السحب:</label>
+                        <input type="text" id="withdraw-address" class="w-full py-2 px-3 rounded-lg focus:ring-red-500 bg-gray-700 text-gray-200" placeholder="أدخل عنوان محفظة السحب" required>
+                    </div>
+                    <div>
+                        <label for="withdraw-amount" class="block text-gray-300 text-sm font-bold mb-2">المبلغ:</label>
+                        <input type="number" id="withdraw-amount" step="any" class="w-full py-2 px-3 rounded-lg focus:ring-red-500 bg-gray-700 text-gray-200" placeholder="أدخل المبلغ" required>
+                    </div>
+                    <p class="text-gray-400 text-sm">الرصيد المتاح: <span id="available-withdraw-balance" class="font-extrabold text-white">0.00 USDT</span></p>
+                    <p class="text-gray-400 text-sm">الرسوم: <span id="withdraw-fee" class="font-extrabold text-white">0.00 USDT</span></p>
+                    <p class="text-gray-400 text-sm">ستتلقى: <span id="final-withdraw-amount" class="font-extrabold text-white">0.00 USDT</span></p>
+                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full w-full transition-all duration-300 transform hover:scale-105 shadow-md">
+                        <i class="fas fa-paper-plane ml-2"></i> تأكيد السحب
+                    </button>
+                    <div id="withdraw-message" class="mt-4 text-center text-red-400 font-semibold text-sm"></div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- تذييل الصفحة (Footer) -->
+    <footer class="bg-gray-900 p-6 text-center text-gray-400 text-sm mt-8 shadow-inner">
+        <p>&copy; 2025 منصة التداول العالمية. جميع الحقوق محفوظة.</p>
+        <p class="mt-2">تداول بذكاء، تداول بأمان.</p>
+    </footer>
+
+    <!-- ربط ملف JavaScript الخاص بنا -->
+    <script src="script.js"></script>
+</body>
+</html>
