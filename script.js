@@ -76,7 +76,6 @@ const balanceBarEthElement = document.getElementById('balance-bar-eth');
 // متغيرات الحالة (لإدارة حالة المستخدم في الواجهة الأمامية)
 // ----------------------------------------------------
 let isLoggedIn = false;
-let isBinanceLinked = false;
 let currentUsername = localStorage.getItem('currentUsername');
 let authToken = localStorage.getItem('authToken');
 let currentPrices = { BTCUSDT: 0, ETHUSDT: 0 }; // لتخزين الأسعار الحالية
@@ -91,7 +90,6 @@ let tradingChart;
 // دالة موحدة لتسجيل الخروج
 function logoutUser() {
     isLoggedIn = false;
-    isBinanceLinked = false;
     currentUsername = null;
     authToken = null;
     localStorage.removeItem('currentUsername');
@@ -100,9 +98,9 @@ function logoutUser() {
     if (currentPage !== 'login.html') {
         window.location.href = 'login.html';
     } else {
-        // إذا كنا بالفعل في صفحة تسجيل الدخول، فقط أظهر قسم المصادقة
+        // إذا كنا بالفعل في login.html، أظهر قسم المصادقة
         if (authSection) authSection.classList.remove('hidden');
-        if (linkBinanceSection) linkBinanceSection.classList.add('hidden');
+        if (linkBinanceSection) linkBinanceSection.classList.add('hidden'); // تأكد من إخفاء قسم ربط باينانس
         if (authMessage) {
             authMessage.textContent = 'تم تسجيل الخروج بنجاح.';
             authMessage.classList.remove('text-green-400', 'text-red-400');
@@ -111,7 +109,7 @@ function logoutUser() {
     }
 }
 
-// دالة للتحقق من حالة المصادقة وربط باينانس وتوجيه المستخدم
+// دالة للتحقق من حالة المصادقة وتوجيه المستخدم
 async function checkAuthAndRedirect() {
     console.log('checkAuthAndRedirect called. Current Page:', currentPage);
     currentUsername = localStorage.getItem('currentUsername');
@@ -119,15 +117,11 @@ async function checkAuthAndRedirect() {
 
     if (currentUsername && authToken) {
         isLoggedIn = true;
-        // تم إزالة التحقق من ربط باينانس هنا مؤقتاً بناءً على طلب المستخدم
-        // isBinanceLinked = await checkBinanceLinkStatus(); // هذه الدالة ستظل موجودة ولكن لن يتم استدعاؤها هنا
-        isBinanceLinked = true; // نفترض أنها مرتبطة مؤقتاً للسماح بالوصول
     } else {
         isLoggedIn = false;
-        isBinanceLinked = false;
     }
 
-    console.log('Auth Status: isLoggedIn', isLoggedIn, 'isBinanceLinked', isBinanceLinked);
+    console.log('Auth Status: isLoggedIn', isLoggedIn);
 
     // منطق التوجيه بناءً على الحالة والصفحة الحالية
     if (!isLoggedIn) {
@@ -139,36 +133,17 @@ async function checkAuthAndRedirect() {
             if (linkBinanceSection) linkBinanceSection.classList.add('hidden');
         }
     } else { // المستخدم مسجل دخول
-        // في هذا التحديث، قمنا بإزالة التحقق من isBinanceLinked هنا للسماح بالوصول
-        // إذا كان المستخدم مسجل دخول، فسيتم توجيهه للصفحة الرئيسية أو الملف الشخصي
         if (currentPage === 'login.html') {
-            window.location.href = 'index.html'; // إعادة توجيه للصفحة الرئيسية إذا كان في صفحة تسجيل الدخول
+            // إذا كان في صفحة تسجيل الدخول ومسجل دخول، وجهه إلى الصفحة الرئيسية
+            window.location.href = 'index.html';
         } else {
             // نحن في index.html أو profile.html ومسجلين دخول
             if (balanceBarSection) balanceBarSection.classList.remove('hidden'); // أظهر شريط الرصيد المصغر
             // تحديث البيانات الحقيقية
             fetchAndDisplayPrices();
             fetchAndDisplayBalance();
-            updateProfileDetails(); // تحديث تفاصيل الملف الشخصي
+            updateProfileDetails(); // تحديث تفاصيل الملف الشخصي (فقط إذا كانت العناصر موجودة)
         }
-    }
-}
-
-// دالة للتحقق من حالة ربط حساب باينانس (لا يتم استدعاؤها بعد تسجيل الدخول مباشرة الآن)
-async function checkBinanceLinkStatus() {
-    if (!currentUsername || !authToken) {
-        return false;
-    }
-    try {
-        const response = await authenticatedFetch(`${BACKEND_URL}/api/user/check-binance-link/${currentUsername}`);
-        if (!response.ok) {
-            return false;
-        }
-        const data = await response.json();
-        return data.isLinked;
-    } catch (error) {
-        console.error('Error checking Binance link status:', error);
-        return false;
     }
 }
 
@@ -245,7 +220,7 @@ if (currentPage === 'login.html') {
                         localStorage.setItem('currentUsername', username);
                         authToken = data.token;
                         localStorage.setItem('authToken', authToken);
-                        // بعد تسجيل الدخول، يتم التوجيه مباشرة دون التحقق من ربط باينانس مؤقتاً
+                        // بعد تسجيل الدخول، يتم التوجيه مباشرة إلى الصفحة الرئيسية
                         window.location.href = 'index.html';
                     } else {
                         authTitle.textContent = 'تسجيل الدخول';
@@ -294,8 +269,8 @@ if (currentPage === 'login.html') {
                         linkBinanceMessage.classList.remove('text-red-400');
                         linkBinanceMessage.classList.add('text-green-400');
                     }
-                    isBinanceLinked = true;
-                    setTimeout(() => { window.location.href = 'index.html'; }, 1500); // توجيه للصفحة الرئيسية بعد الربط
+                    // بعد الربط، يتم التوجيه إلى الصفحة الرئيسية
+                    setTimeout(() => { window.location.href = 'index.html'; }, 1500);
                 } else {
                     if (linkBinanceMessage) {
                         linkBinanceMessage.textContent = data.message;
@@ -461,7 +436,8 @@ if (currentPage === 'index.html') {
             let targetSymbolSelect;
 
             if (formType === 'buy') {
-                availableBalance = parseFloat(balanceBarTotalElement ? balanceBarTotalElement.textContent.split(' ')[0] : '0'); // رصيد USDT
+                // استخدام رصيد USDT المتاح من شريط الرصيد المصغر
+                availableBalance = parseFloat(balanceBarTotalElement ? balanceBarTotalElement.textContent.split(' ')[0] : '0');
                 currentPrice = currentPrices[document.getElementById('buy-symbol').value] || 0;
                 targetQuantityInput = buyQuantityInput;
                 targetSymbolSelect = document.getElementById('buy-symbol');
@@ -610,10 +586,10 @@ if (currentPage === 'index.html') {
             const selectedPair = marketPairSelect.value;
             if (chartPairTitle) chartPairTitle.textContent = selectedPair;
             if (orderBookPairTitle) orderBookPairTitle.textContent = selectedPair;
-            // يمكنك هنا تحديث الرسم البياني ودفتر الأوامر بناءً على الزوج المختار
             updateChartData(selectedPair); // تحديث بيانات الرسم البياني
-            // تحديث دفتر الأوامر (بيانات وهمية حالياً)
-            updateOrderBook(selectedPair);
+            updateOrderBook(selectedPair); // تحديث دفتر الأوامر
+            updateTradeHistory(selectedPair); // تحديث سجل التداولات
+            fetchAndDisplayPrices(); // تحديث السعر الحالي في شريط معلومات السوق
         });
     }
 
