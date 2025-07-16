@@ -228,6 +228,7 @@
             justify-content: space-between;
             padding: 0.25rem 0.5rem;
             font-size: 0.875rem;
+            overflow: hidden; /* لإخفاء أي تجاوز للخلفية */
         }
         .order-book-row::before {
             content: '';
@@ -237,6 +238,8 @@
             height: 100%;
             z-index: 0;
             opacity: 0.2; /* شفافية لتظهر البيانات فوقها */
+            width: var(--depth-width, 0%); /* يتم تعيينه بواسطة JS */
+            transition: width 0.1s ease-out; /* انتقال سلس للعمق */
         }
         .order-book-bid::before {
             background-color: #10b981; /* أخضر للشراء */
@@ -328,8 +331,8 @@
         <button class="close-button" id="close-mobile-menu"><i class="fas fa-times"></i></button>
         <nav class="flex flex-col space-y-4 text-center">
             <a href="index.html" class="nav-link text-blue-400 font-bold"><i class="fas fa-chart-line ml-2"></i> التداول الفوري</a>
-            <a href="profile.html" class="nav-link"><i class="fas fa-user-circle ml-2"></i> الملف الشخصي</a>
-            <a href="index.html#deposit-withdraw-section" class="nav-link"><i class="fas fa-money-bill-transfer ml-2"></i> إيداع/سحب</a>
+            <a href="profile.html" class="nav-link" id="view-profile-link"><i class="fas fa-user-circle ml-2"></i> الملف الشخصي</a>
+            <a href="deposit_withdraw.html" class="nav-link" id="deposit-withdraw-link"><i class="fas fa-money-bill-transfer ml-2"></i> إيداع/سحب</a>
             <button id="mobile-logout-button" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-full shadow-md transition-all duration-300 transform hover:scale-105 w-full">
                 <i class="fas fa-sign-out-alt ml-2"></i> تسجيل الخروج
             </button>
@@ -342,7 +345,7 @@
             <p class="font-semibold">الرصيد الإجمالي: <span id="balance-bar-total" class="text-green-400 font-bold">0.00 USDT</span></p>
             <p class="font-semibold">BTC: <span id="balance-bar-btc" class="text-yellow-400 font-bold">0.00</span></p>
             <p class="font-semibold">ETH: <span id="balance-bar-eth" class="text-purple-400 font-bold">0.00</span></p>
-            <a href="#deposit-withdraw-section" class="text-blue-400 hover:underline font-semibold">
+            <a href="deposit_withdraw.html" class="text-blue-400 hover:underline font-semibold">
                 <i class="fas fa-money-bill-transfer ml-1"></i> إيداع/سحب
             </a>
         </div>
@@ -395,39 +398,12 @@
                 <div class="overflow-y-auto h-[calc(100vh-250px)] lg:h-[calc(100vh-350px)]"> <!-- ارتفاع ديناميكي -->
                     <div id="market-pairs-list">
                         <!-- سيتم ملؤها بواسطة JS -->
+                        <!-- بيانات وهمية مبدئية، سيتم تحديثها ديناميكياً -->
                         <div class="market-pair-item active" data-pair="BTCUSDT">
                             <span class="font-semibold">BTC/USDT</span>
                             <div>
                                 <span class="price text-green-400">30100.50</span>
                                 <span class="change-positive ml-2">+0.5%</span>
-                            </div>
-                        </div>
-                        <div class="market-pair-item" data-pair="ETHUSDT">
-                            <span class="font-semibold">ETH/USDT</span>
-                            <div>
-                                <span class="price text-red-400">2000.10</span>
-                                <span class="change-negative ml-2">-0.2%</span>
-                            </div>
-                        </div>
-                        <div class="market-pair-item" data-pair="XRPUSDT">
-                            <span class="font-semibold">XRP/USDT</span>
-                            <div>
-                                <span class="price text-green-400">0.5234</span>
-                                <span class="change-positive ml-2">+1.1%</span>
-                            </div>
-                        </div>
-                        <div class="market-pair-item" data-pair="ADAUSDT">
-                            <span class="font-semibold">ADA/USDT</span>
-                            <div>
-                                <span class="price text-red-400">0.3567</span>
-                                <span class="change-negative ml-2">-0.8%</span>
-                            </div>
-                        </div>
-                        <div class="market-pair-item" data-pair="SOLUSDT">
-                            <span class="font-semibold">SOL/USDT</span>
-                            <div>
-                                <span class="price text-green-400">120.45</span>
-                                <span class="change-positive ml-2">+2.3%</span>
                             </div>
                         </div>
                     </div>
@@ -449,6 +425,9 @@
                     <button class="timeframe-button bg-gray-700 hover:bg-gray-600 text-gray-300 text-sm py-2 px-4 rounded-full transition-colors duration-200" data-timeframe="1h">1س</button>
                     <button class="timeframe-button bg-gray-700 hover:bg-gray-600 text-gray-300 text-sm py-2 px-4 rounded-full transition-colors duration-200" data-timeframe="4h">4س</button>
                     <button class="timeframe-button bg-gray-700 hover:bg-gray-600 text-gray-300 text-sm py-2 px-4 rounded-full transition-colors duration-200" data-timeframe="1d">1ي</button>
+                    <button class="timeframe-button bg-gray-700 hover:bg-gray-600 text-gray-300 text-sm py-2 px-4 rounded-full transition-colors duration-200" data-timeframe="1w">1أ</button>
+                    <button class="timeframe-button bg-gray-700 hover:bg-gray-600 text-gray-300 px-3 py-1 rounded-full" data-timeframe="1M">1ش</button>
+                    <button class="timeframe-button bg-gray-700 hover:bg-gray-600 text-gray-300 px-3 py-1 rounded-full" data-timeframe="all">الكل</button>
                 </div>
             </section>
 
@@ -462,41 +441,17 @@
                         <div class="overflow-y-auto h-48 bg-gray-800 rounded-lg p-2 border border-gray-700 shadow-inner flex flex-col-reverse">
                             <div id="order-book-asks" class="flex flex-col">
                                 <!-- سيتم ملؤها بواسطة JS -->
-                                <div class="order-book-row order-book-ask" style="--depth-width: 70%;">
-                                    <span class="order-book-price ask">30103.00</span>
-                                    <span class="order-book-quantity text-gray-300">0.9</span>
-                                </div>
-                                <div class="order-book-row order-book-ask" style="--depth-width: 50%;">
-                                    <span class="order-book-price ask">30102.50</span>
-                                    <span class="order-book-quantity text-gray-300">1.5</span>
-                                </div>
-                                <div class="order-book-row order-book-ask" style="--depth-width: 20%;">
-                                    <span class="order-book-price ask">30102.00</span>
-                                    <span class="order-book-quantity text-gray-300">0.4</span>
-                                </div>
                             </div>
                         </div>
                         <!-- السعر الأخير في المنتصف -->
                         <div class="text-center my-2">
-                            <span id="middle-price" class="text-3xl font-extrabold text-white">30100.50</span>
+                            <span id="middle-price" class="text-3xl font-extrabold text-white">0.00</span>
                             <span class="text-gray-400 text-sm ml-1">USDT</span>
                         </div>
                         <!-- أوامر الشراء (Bids) -->
                         <div class="overflow-y-auto h-48 bg-gray-800 rounded-lg p-2 border border-gray-700 shadow-inner">
                             <div id="order-book-bids" class="flex flex-col">
                                 <!-- سيتم ملؤها بواسطة JS -->
-                                <div class="order-book-row order-book-bid" style="--depth-width: 80%;">
-                                    <span class="order-book-price bid">30100.00</span>
-                                    <span class="order-book-quantity text-gray-300">0.5</span>
-                                </div>
-                                <div class="order-book-row order-book-bid" style="--depth-width: 40%;">
-                                    <span class="order-book-price bid">30099.50</span>
-                                    <span class="order-book-quantity text-gray-300">1.2</span>
-                                </div>
-                                <div class="order-book-row order-book-bid" style="--depth-width: 60%;">
-                                    <span class="order-book-price bid">30099.00</span>
-                                    <span class="order-book-quantity text-gray-300">0.8</span>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -516,16 +471,6 @@
                             </thead>
                             <tbody id="trade-history-body">
                                 <!-- سيتم ملء هذا بواسطة JavaScript -->
-                                <tr>
-                                    <td class="text-green-400">30100.50</td>
-                                    <td class="text-gray-300">0.01</td>
-                                    <td class="text-gray-400">10:35:12</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-red-400">30101.00</td>
-                                    <td class="text-gray-300">0.05</td>
-                                    <td class="text-gray-400">10:35:05</td>
-                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -645,7 +590,7 @@
                     <!-- يمكن إضافة المزيد من العملات هنا -->
                 </div>
                 <div class="mt-6 text-center">
-                    <a href="profile.html#full-dashboard-section" class="text-blue-500 hover:underline text-sm font-semibold">
+                    <a href="profile.html" class="text-blue-500 hover:underline text-sm font-semibold" id="view-full-dashboard-link">
                         <i class="fas fa-external-link-alt ml-1"></i> عرض لوحة التحكم الكاملة
                     </a>
                 </div>
@@ -679,14 +624,6 @@
                             </thead>
                             <tbody id="open-orders-body">
                                 <!-- سيتم ملؤها بواسطة JavaScript -->
-                                <tr>
-                                    <td class="text-gray-300">BTC/USDT</td>
-                                    <td class="text-green-400">شراء (حد)</td>
-                                    <td class="text-gray-300">29500</td>
-                                    <td class="text-gray-300">0.02</td>
-                                    <td class="text-yellow-400">معلق</td>
-                                    <td><button class="text-red-500 hover:text-red-700"><i class="fas fa-times-circle"></i></button></td>
-                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -709,14 +646,6 @@
                             </thead>
                             <tbody id="order-history-body">
                                 <!-- سيتم ملؤها بواسطة JavaScript -->
-                                <tr>
-                                    <td class="text-gray-300">ETH/USDT</td>
-                                    <td class="text-green-400">شراء (سوق)</td>
-                                    <td class="text-gray-300">2000</td>
-                                    <td class="text-gray-300">0.1</td>
-                                    <td class="text-green-400">مكتمل</td>
-                                    <td class="text-gray-300">2025-07-10</td>
-                                </tr>
                             </tbody>
                         </table>
                     </div>
