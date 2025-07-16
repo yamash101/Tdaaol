@@ -3,71 +3,248 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم - بوابة التداول الشخصية</title>
-    <!-- استيراد Tailwind CSS لتصميم سريع ومرن -->
+    <title>منصة التداول العالمية - الرئيسية</title>
+    <!-- استيراد Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- خط Inter (يمكنك استبداله بخط عربي أجمل إذا وجدت) -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- ربط ملف CSS المخصص الخاص بنا للتصميمات الإضافية -->
-    <link rel="stylesheet" href="style.css">
-    <!-- أيقونات Font Awesome (لأيقونات جميلة وسهلة الاستخدام) -->
+    <!-- خط Inter (للمظهر العصري والاحترافي) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- أيقونات Font Awesome (لأيقونات احترافية) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- ربط ملف CSS المخصص (للتصميمات الإضافية والتحسينات الدقيقة) -->
+    <link rel="stylesheet" href="style.css">
     <style>
+        /* إعدادات الخط الأساسية والاتجاه */
         body {
             font-family: 'Inter', sans-serif;
             direction: rtl;
             text-align: right;
-            background-color: #1a202c;
+            background-color: #0a0c10; /* خلفية داكنة جداً جداً */
+            color: #e0e6f0; /* لون نص فاتح ومريح للعين */
         }
+        /* تخصيص شريط التمرير */
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #171923; }
-        ::-webkit-scrollbar-thumb { background: #4a5568; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+        ::-webkit-scrollbar-track { background: #12151a; }
+        ::-webkit-scrollbar-thumb { background: #3a404b; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #5a606b; }
+
+        /* تخصيص قائمة الجوال لتظهر كشريط جانبي */
         #mobile-menu {
-            top: 80px; /* ارتفاع رأس الصفحة الموسع */
-            left: 0;
-            right: 0;
-            transform: translateY(-100%);
-            opacity: 0;
-            pointer-events: none;
-            transition: all 0.3s ease-in-out;
+            position: fixed;
+            top: 0;
+            right: -300px; /* مخفية في البداية */
+            width: 300px;
+            height: 100%;
+            background-color: #1a202c; /* لون أغمق قليلاً من الخلفية */
+            padding: 2rem;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5);
+            transition: right 0.3s ease-in-out;
+            z-index: 50; /* تأكد أنها فوق المحتوى */
+            display: flex; /* لترتيب العناصر عمودياً */
+            flex-direction: column;
         }
         #mobile-menu.active {
-            transform: translateY(0%);
-            opacity: 1;
-            pointer-events: auto;
+            right: 0; /* تظهر عند التفعيل */
+        }
+        #mobile-menu .close-button {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            color: #cbd5e0;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        #mobile-menu nav {
+            margin-top: 2rem;
+            flex-grow: 1; /* لتأخذ المساحة المتاحة */
+        }
+        #mobile-menu .nav-link, #mobile-menu button {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end; /* محاذاة لليمين */
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.75rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+        #mobile-menu .nav-link i, #mobile-menu button i {
+            margin-right: 0.5rem; /* مسافة بين الأيقونة والنص */
+            margin-left: 0; /* إلغاء الهامش الأيسر إذا كان موجوداً */
+        }
+        #mobile-menu .nav-link {
+            color: #a0aec0; /* لون رمادي فاتح للروابط */
+            transition: background-color 0.2s, color 0.2s;
+        }
+        #mobile-menu .nav-link:hover {
+            background-color: #2d3748;
+            color: #63b3ed; /* أزرق فاتح عند التحويم */
+        }
+        #mobile-menu #mobile-logout-button {
+            background-color: #e53e3e; /* أحمر للخروج */
+            color: white;
+            justify-content: center; /* توسيط زر الخروج */
+            margin-top: auto; /* لدفعه إلى الأسفل */
+        }
+        #mobile-menu #mobile-logout-button:hover {
+            background-color: #c53030;
+        }
+
+        /* تخصيص الأزرار ذات الظل (tailwind already handles this, but for extra control) */
+        .shadow-custom-sm { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
+        .shadow-custom-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+        .shadow-custom-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1); }
+        .shadow-custom-xl { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1); }
+        .shadow-custom-2xl { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
+        .shadow-custom-inner { box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06); }
+
+        /* تخصيص بطاقات الأرصدة والأسعار */
+        .panel {
+            background-color: #1a202c; /* خلفية الألواح */
+            border-radius: 0.75rem; /* rounded-xl */
+            padding: 1.5rem; /* p-6 */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.15); /* ظل عميق */
+            border: 1px solid #2d3748; /* حدود خفيفة */
+            transition: transform 0.2s ease-in-out;
+        }
+        .panel:hover {
+            transform: translateY(-2px); /* تأثير رفع خفيف عند التحويم */
+        }
+
+        /* ألوان الحدود للألواح */
+        .border-blue-500 { border-color: #3b82f6; }
+        .border-green-500 { border-color: #10b981; }
+        .border-yellow-500 { border-color: #f59e0b; }
+        .border-purple-500 { border-color: #8b5cf6; }
+        .border-red-500 { border-color: #ef4444; }
+
+        /* تخصيص حقول الإدخال والاختيار */
+        input[type="text"],
+        input[type="password"],
+        input[type="number"],
+        select {
+            background-color: #2d3748; /* خلفية أغمق قليلاً */
+            border-color: #4a5568; /* حدود أغمق */
+            color: #e0e6f0; /* لون نص فاتح */
+            padding: 0.75rem 1rem; /* py-3 px-4 */
+            border-radius: 0.5rem; /* rounded-lg */
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3); /* ظل داخلي */
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        input[type="number"]:focus,
+        select:focus {
+            border-color: #63b3ed; /* لون حدود التركيز */
+            box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.5); /* ظل التركيز */
+            outline: none; /* إزالة الخط الأزرق الافتراضي */
+        }
+
+        /* تخصيص أزرار التبويبات (شراء/بيع) */
+        .tab-button {
+            border: none;
+            cursor: pointer;
+            outline: none;
+            font-size: 1.125rem; /* text-lg */
+            padding: 1rem 2rem; /* py-4 px-8 */
+            border-radius: 0.75rem; /* rounded-xl */
+            white-space: nowrap;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            transition: all 0.2s ease-in-out;
+            transform: translateY(0);
+        }
+        .tab-button:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .tab-button.active-tab {
+            background-color: #3b82f6; /* أزرق داكن */
+            color: white;
+            box-shadow: 0 8px 15px rgba(59, 130, 246, 0.4);
+        }
+        .tab-button:not(.active-tab) {
+            background-color: #2d3748; /* رمادي داكن للخامل */
+            color: #a0aec0; /* نص رمادي فاتح */
+        }
+        .tab-button:not(.active-tab):hover {
+            background-color: #4a5568;
+            color: #e0e6f0;
+        }
+
+        /* أزرار الشراء والبيع داخل النماذج */
+        .btn-buy {
+            background-color: #10b981; /* أخضر */
+            color: white;
+        }
+        .btn-buy:hover {
+            background-color: #059669;
+        }
+        .btn-sell {
+            background-color: #ef4444; /* أحمر */
+            color: white;
+        }
+        .btn-sell:hover {
+            background-color: #dc2626;
+        }
+
+        /* الجداول */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 1rem 1.5rem;
+            text-align: right;
+            border-bottom: 1px solid #2d3748;
+        }
+        thead th {
+            background-color: #1a202c;
+            color: #a0aec0;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+        }
+        tbody tr:nth-child(even) {
+            background-color: #1a202c;
+        }
+        tbody tr:hover {
+            background-color: #2d3748;
+        }
+        tbody td {
+            color: #e0e6f0;
+            font-size: 0.95rem;
+        }
+
+        /* إخفاء العناصر (مهم لـ JavaScript) */
+        .hidden {
+            display: none !important;
         }
     </style>
 </head>
-<body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col">
-    <!-- رأس الصفحة (Header) - شريط التنقل العلوي الموسع -->
-    <header class="bg-gray-800 p-6 md:p-8 shadow-lg">
+<body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col">
+
+    <!-- رأس الصفحة (Header) - شريط التنقل العلوي الفخم -->
+    <header class="bg-gray-900 p-4 md:p-6 shadow-xl z-30 relative">
         <div class="container mx-auto flex justify-between items-center">
             <!-- شعار الموقع -->
-            <h1 class="text-3xl md:text-4xl font-extrabold text-blue-400">بوابة التداول <span class="text-white text-xl md:text-2xl font-light">الخاصة بك</span></h1>
-            <!-- زر قائمة الجوال (يظهر على جميع الشاشات الآن للتنقل الرئيسي) -->
+            <a href="index.html" class="flex items-center space-x-2">
+                <i class="fas fa-chart-line text-blue-500 text-3xl md:text-4xl"></i>
+                <h1 class="text-3xl md:text-4xl font-extrabold text-white">بوابة التداول <span class="text-blue-400 text-xl md:text-2xl font-light">العالمية</span></h1>
+            </a>
+            
+            <!-- زر قائمة الجوال (Hamburger menu) - يظهر دائماً للتنقل الرئيسي -->
             <button id="mobile-menu-button" class="text-gray-300 focus:outline-none p-2 rounded-md hover:bg-gray-700 transition-colors duration-300">
-                <i class="fas fa-bars text-3xl"></i>
+                <i class="fas fa-bars text-3xl md:text-4xl"></i>
             </button>
         </div>
     </header>
 
-    <!-- قائمة الجوال الجانبية المنبثقة (Side Menu) - تحتوي على جميع خيارات التنقل -->
-    <div id="mobile-menu" class="hidden md:hidden bg-gray-800 p-6 shadow-2xl absolute w-full z-20">
+    <!-- قائمة الجوال الجانبية المنبثقة (Side Menu) -->
+    <div id="mobile-menu" class="hidden">
+        <button class="close-button" id="close-mobile-menu"><i class="fas fa-times"></i></button>
         <nav class="flex flex-col space-y-4 text-center">
-            <!-- زر الملف الشخصي (سينتقل لصفحة الملف) -->
-            <a href="profile.html" class="nav-link text-gray-300 hover:text-blue-400 transition-colors duration-300 p-3 rounded-md font-semibold text-lg flex items-center justify-center">
-                <i class="fas fa-user-circle ml-2"></i> الملف الشخصي
-            </a>
-            <!-- زر التداول الفوري (هذا هو القسم الحالي في index.html) -->
-            <a href="#" data-section="trade-section" class="nav-link text-gray-300 hover:text-blue-400 transition-colors duration-300 p-3 rounded-md font-semibold text-lg">
-                <i class="fas fa-chart-line ml-2"></i> التداول الفوري
-            </a>
-            <!-- زر الإيداع والسحب (هذا هو القسم الحالي في index.html) -->
-            <a href="#" data-section="deposit-withdraw-section" class="nav-link text-gray-300 hover:text-blue-400 transition-colors duration-300 p-3 rounded-md font-semibold text-lg">
-                <i class="fas fa-money-bill-transfer ml-2"></i> إيداع/سحب
-            </a>
-            <!-- زر تسجيل الخروج داخل القائمة الجانبية -->
+            <a href="index.html" class="nav-link text-blue-400 font-bold"><i class="fas fa-chart-line ml-2"></i> التداول الفوري</a>
+            <a href="profile.html" class="nav-link"><i class="fas fa-user-circle ml-2"></i> الملف الشخصي</a>
+            <a href="index.html#deposit-withdraw-section" class="nav-link"><i class="fas fa-money-bill-transfer ml-2"></i> إيداع/سحب</a>
             <button id="mobile-logout-button" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-full shadow-md transition-all duration-300 transform hover:scale-105 w-full">
                 <i class="fas fa-sign-out-alt ml-2"></i> تسجيل الخروج
             </button>
@@ -75,155 +252,257 @@
     </div>
 
     <!-- شريط الرصيد المصغر (يظهر تحت الهيدر بعد تسجيل الدخول) -->
-    <section id="balance-bar-section" class="hidden bg-gray-700 p-3 shadow-md text-center text-gray-200">
+    <section id="balance-bar-section" class="hidden bg-gray-800 p-3 shadow-md text-center text-gray-200 z-20 relative">
         <div class="container mx-auto flex flex-wrap justify-around items-center text-sm md:text-base gap-2">
             <p class="font-semibold">الرصيد الإجمالي: <span id="balance-bar-total" class="text-green-400 font-bold">0.00 USDT</span></p>
             <p class="font-semibold">BTC: <span id="balance-bar-btc" class="text-yellow-400 font-bold">0.00</span></p>
             <p class="font-semibold">ETH: <span id="balance-bar-eth" class="text-purple-400 font-bold">0.00</span></p>
-            <!-- أزرار الإيداع والسحب في الشريط المصغر -->
-            <a href="#" data-section="deposit-withdraw-section" class="nav-link text-blue-400 hover:underline font-semibold">
+            <a href="#deposit-withdraw-section" class="text-blue-400 hover:underline font-semibold">
                 <i class="fas fa-money-bill-transfer ml-1"></i> إيداع/سحب
             </a>
         </div>
     </section>
 
-    <!-- المحتوى الرئيسي للموقع (سيتم تبديله ديناميكياً بواسطة JavaScript) -->
-    <main class="flex-grow container mx-auto p-4 flex flex-col justify-center items-center">
-        <!-- قسم التداول (يظهر بعد تسجيل الدخول وربط الحساب) -->
-        <section id="trade-section" class="w-full p-4 md:p-6 bg-gray-800 rounded-xl shadow-2xl transition-all duration-500 ease-in-out">
-            <h2 class="text-2xl md:text-3xl font-extrabold text-blue-400 mb-6">التداول الفوري <span class="text-white text-lg md:text-xl font-light">شراء وبيع العملات الرقمية بسهولة</span></h2>
-            <p class="text-gray-400 mb-8 text-center text-sm md:text-base">
-                تداول العملات الرقمية الرئيسية بأسعار تنافسية ومباشرة من باينانس، مع عمولتك المدمجة في السعر المعروض لشفافية تامة.
-            </p>
-
-            <!-- أسعار العملات الحية -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-8" id="market-prices">
-                <!-- بطاقة سعر البيتكوين -->
-                <div class="bg-gray-700 p-6 rounded-lg shadow-xl border-b-4 border-blue-500 flex flex-col justify-between">
-                    <div>
-                        <div class="flex justify-between items-center mb-3">
-                            <h3 class="text-gray-300 text-lg md:text-xl font-semibold">BTC/USDT</h3>
-                            <span class="text-green-400 text-sm md:text-base font-bold bg-green-900 px-3 py-1 rounded-full">+0.5%</span>
-                        </div>
-                        <p id="btc-price" class="text-4xl md:text-5xl font-extrabold text-white">0.00 <span class="text-2xl md:text-3xl font-normal">USDT</span></p>
-                    </div>
-                    <p class="text-gray-400 text-xs md:text-sm mt-2">سعر باينانس الأصلي: <span id="btc-binance-price" class="font-semibold">0.00</span> USDT</p>
-                    <p class="text-gray-400 text-xs md:text-sm">عمولتك على هذا السعر: <span id="btc-commission-rate" class="font-semibold">0.5</span>%</p>
+    <!-- شريط معلومات السوق (Market Info Bar) -->
+    <section class="bg-gray-800 py-3 px-4 md:px-6 shadow-md border-b border-gray-700 z-10 relative">
+        <div class="container mx-auto flex flex-wrap items-center justify-between text-sm md:text-base font-semibold">
+            <div class="flex items-center space-x-4">
+                <span class="text-gray-300">الزوج:</span>
+                <select id="market-pair-select" class="bg-gray-700 text-white rounded-md p-1 px-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="BTCUSDT">BTC/USDT</option>
+                    <option value="ETHUSDT">ETH/USDT</option>
+                </select>
+            </div>
+            <div class="flex flex-wrap items-center gap-4 md:gap-6 mt-2 md:mt-0">
+                <div class="flex items-center">
+                    <span class="text-gray-400 ml-2">السعر:</span>
+                    <span id="current-price" class="text-green-400 text-lg font-bold">0.00</span>
                 </div>
-                <!-- بطاقة سعر الإيثيريوم -->
-                <div class="bg-gray-700 p-6 rounded-lg shadow-xl border-b-4 border-purple-500 flex flex-col justify-between">
-                    <div>
-                        <div class="flex justify-between items-center mb-3">
-                            <h3 class="text-gray-300 text-lg md:text-xl font-semibold">ETH/USDT</h3>
-                            <span class="text-red-400 text-sm md:text-base font-bold bg-red-900 px-3 py-1 rounded-full">-0.2%</span>
-                        </div>
-                        <p id="eth-price" class="text-4xl md:text-5xl font-extrabold text-white">0.00 <span class="text-2xl md:text-3xl font-normal">USDT</span></p>
-                    </div>
-                    <p class="text-gray-400 text-xs md:text-sm mt-2">سعر باينانس الأصلي: <span id="eth-binance-price" class="font-semibold">0.00</span> USDT</p>
-                    <p class="text-400 text-xs md:text-sm">عمولتك على هذا السعر: <span id="eth-commission-rate" class="font-semibold">0.5</span>%</p>
+                <div class="flex items-center">
+                    <span class="text-gray-400 ml-2">تغير 24 ساعة:</span>
+                    <span id="price-change-24h" class="text-green-400 font-bold">+0.00%</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="text-gray-400 ml-2">حجم 24 ساعة:</span>
+                    <span id="volume-24h" class="text-gray-300 font-bold">0.00</span>
                 </div>
             </div>
+        </div>
+    </section>
 
-            <!-- واجهة الشراء والبيع -->
-            <div class="bg-gray-700 p-6 md:p-8 rounded-xl shadow-xl">
-                <div class="flex justify-center mb-6 md:mb-8">
-                    <button id="buy-tab" class="px-6 py-3 md:px-8 md:py-4 rounded-l-full bg-blue-600 text-white font-bold text-base md:text-lg transition-all duration-300 transform hover:scale-105 shadow-md active-tab">
+    <!-- المحتوى الرئيسي لصفحة التداول -->
+    <main class="flex-grow container mx-auto p-4 md:p-6 lg:p-8 flex flex-col lg:flex-row gap-6">
+        <!-- العمود الأيسر: الرسم البياني، دفتر الأوامر -->
+        <div class="flex-1 flex flex-col gap-6">
+            <!-- قسم الرسم البياني (Placeholder) -->
+            <section class="panel bg-gray-900 p-6 flex-grow">
+                <h2 class="text-xl md:text-2xl font-bold text-white mb-4">الرسم البياني <span id="chart-pair-title" class="text-blue-400 text-lg font-light">BTC/USDT</span></h2>
+                <div class="h-64 md:h-96 bg-gray-700 rounded-lg flex items-center justify-center text-gray-400 text-lg border border-gray-600 shadow-inner">
+                    <p>مكان الرسم البياني هنا (يمكن دمج TradingView Widget أو Chart.js)</p>
+                </div>
+                <div class="flex flex-wrap gap-3 mt-4 justify-center">
+                    <button class="timeframe-button bg-blue-600 hover:bg-blue-700 text-white text-sm py-2 px-4 rounded-full transition-colors duration-200">1د</button>
+                    <button class="timeframe-button bg-gray-700 hover:bg-gray-600 text-gray-300 text-sm py-2 px-4 rounded-full transition-colors duration-200">5د</button>
+                    <button class="timeframe-button bg-gray-700 hover:bg-gray-600 text-gray-300 text-sm py-2 px-4 rounded-full transition-colors duration-200">1س</button>
+                    <button class="timeframe-button bg-gray-700 hover:bg-gray-600 text-gray-300 text-sm py-2 px-4 rounded-full transition-colors duration-200">4س</button>
+                    <button class="timeframe-button bg-gray-700 hover:bg-gray-600 text-gray-300 text-sm py-2 px-4 rounded-full transition-colors duration-200">1ي</button>
+                </div>
+            </section>
+
+            <!-- قسم دفتر الأوامر (Order Book) -->
+            <section class="panel bg-gray-900 p-6">
+                <h2 class="text-xl md:text-2xl font-bold text-white mb-4">دفتر الأوامر <span id="order-book-pair-title" class="text-blue-400 text-lg font-light">BTC/USDT</span></h2>
+                <div class="grid grid-cols-2 gap-4">
+                    <!-- أوامر الشراء (Bids) -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-green-400 mb-2">عروض الشراء (Bids)</h3>
+                        <div class="overflow-y-auto h-48 bg-gray-800 rounded-lg p-2 border border-gray-700 shadow-inner">
+                            <table class="min-w-full text-sm">
+                                <thead>
+                                    <tr>
+                                        <th class="text-right text-gray-400">السعر (USDT)</th>
+                                        <th class="text-right text-gray-400">الكمية (BTC)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="order-book-bids">
+                                    <!-- سيتم ملؤها بواسطة JS -->
+                                    <tr class="text-green-300"><td>30100.00</td><td>0.5</td></tr>
+                                    <tr class="text-green-300"><td>30099.50</td><td>1.2</td></tr>
+                                    <tr class="text-green-300"><td>30099.00</td><td>0.8</td></tr>
+                                    <tr class="text-green-300"><td>30098.50</td><td>2.1</td></tr>
+                                    <tr class="text-green-300"><td>30098.00</td><td>0.3</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- أوامر البيع (Asks) -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-red-400 mb-2">عروض البيع (Asks)</h3>
+                        <div class="overflow-y-auto h-48 bg-gray-800 rounded-lg p-2 border border-gray-700 shadow-inner">
+                            <table class="min-w-full text-sm">
+                                <thead>
+                                    <tr>
+                                        <th class="text-right text-gray-400">السعر (USDT)</th>
+                                        <th class="text-right text-gray-400">الكمية (BTC)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="order-book-asks">
+                                    <!-- سيتم ملؤها بواسطة JS -->
+                                    <tr class="text-red-300"><td>30101.00</td><td>0.7</td></tr>
+                                    <tr class="text-red-300"><td>30101.50</td><td>1.0</td></tr>
+                                    <tr class="text-red-300"><td>30102.00</td><td>0.4</td></tr>
+                                    <tr class="text-red-300"><td>30102.50</td><td>1.5</td></tr>
+                                    <tr class="text-red-300"><td>30103.00</td><td>0.9</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- العمود الأيمن: نماذج التداول، أسعار العملات، سجل التداولات الأخيرة، المحفظة -->
+        <div class="flex-1 flex flex-col gap-6 lg:max-w-md">
+            <!-- قسم الشراء والبيع -->
+            <section class="panel bg-gray-900 p-6">
+                <h2 class="text-xl md:text-2xl font-bold text-white mb-4">تنفيذ أمر التداول</h2>
+                <div class="flex justify-center mb-6">
+                    <button id="buy-tab" class="tab-button active-tab rounded-r-none">
                         <i class="fas fa-plus-circle ml-2"></i> شراء
                     </button>
-                    <button id="sell-tab" class="px-6 py-3 md:px-8 md:py-4 rounded-r-full bg-gray-600 text-gray-300 font-bold text-base md:text-lg transition-all duration-300 transform hover:scale-105 shadow-md">
+                    <button id="sell-tab" class="tab-button rounded-l-none">
                         <i class="fas fa-minus-circle ml-2"></i> بيع
                     </button>
                 </div>
 
                 <!-- نموذج الشراء -->
-                <form id="buy-form" class="space-y-4 md:space-y-6">
+                <form id="buy-form" class="space-y-4">
                     <div>
-                        <label for="buy-symbol" class="block text-gray-300 text-xs md:text-sm font-bold mb-2">اختر العملة للشراء:</label>
-                        <select id="buy-symbol" class="shadow-inner appearance-none border border-gray-600 rounded-lg w-full py-2 px-3 md:py-3 md:px-4 text-gray-200 leading-tight focus:outline-none focus:ring-3 focus:ring-blue-500 bg-gray-800 text-sm md:text-base">
+                        <label for="buy-symbol" class="block text-gray-300 text-sm font-bold mb-2">اختر العملة:</label>
+                        <select id="buy-symbol" class="w-full py-2 px-3 rounded-lg focus:ring-blue-500 bg-gray-700 text-gray-200">
                             <option value="BTCUSDT">البيتكوين (BTC/USDT)</option>
                             <option value="ETHUSDT">الإيثيريوم (ETH/USDT)</option>
                         </select>
                     </div>
                     <div>
-                        <label for="buy-quantity" class="block text-gray-300 text-xs md:text-sm font-bold mb-2">الكمية التي ترغب بشرائها:</label>
-                        <input type="number" id="buy-quantity" name="quantity" step="any" class="shadow-inner appearance-none border border-gray-600 rounded-lg w-full py-2 px-3 md:py-3 md:px-4 text-gray-200 leading-tight focus:outline-none focus:ring-3 focus:ring-blue-500 bg-gray-800 placeholder-gray-500 text-sm md:text-base" placeholder="أدخل الكمية" required>
+                        <label for="buy-order-type" class="block text-gray-300 text-sm font-bold mb-2">نوع الأمر:</label>
+                        <select id="buy-order-type" class="w-full py-2 px-3 rounded-lg focus:ring-blue-500 bg-gray-700 text-gray-200">
+                            <option value="market">سوق (Market)</option>
+                            <option value="limit">حد (Limit)</option>
+                        </select>
                     </div>
-                    <p class="text-gray-400 text-sm md:text-base">السعر التقديري للشراء (شامل عمولتك): <span id="buy-estimated-price" class="font-extrabold text-white">0.00</span> USDT</p>
-                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 md:py-3 md:px-6 rounded-full w-full transition-all duration-300 transform hover:scale-105 shadow-md text-sm md:text-base">
+                    <div id="buy-limit-price-group" class="hidden">
+                        <label for="buy-limit-price" class="block text-gray-300 text-sm font-bold mb-2">سعر الحد (USDT):</label>
+                        <input type="number" id="buy-limit-price" name="limitPrice" step="any" class="w-full py-2 px-3 rounded-lg focus:ring-blue-500 bg-gray-700 text-gray-200" placeholder="سعر الشراء المحدد">
+                    </div>
+                    <div>
+                        <label for="buy-quantity" class="block text-gray-300 text-sm font-bold mb-2">الكمية:</label>
+                        <input type="number" id="buy-quantity" name="quantity" step="any" class="w-full py-2 px-3 rounded-lg focus:ring-blue-500 bg-gray-700 text-gray-200" placeholder="أدخل الكمية" required>
+                    </div>
+                    <p class="text-gray-400 text-sm">السعر التقديري: <span id="buy-estimated-price" class="font-extrabold text-white">0.00</span> USDT</p>
+                    <button type="submit" class="btn-buy font-bold py-2 px-4 rounded-full w-full transition-all duration-300 transform hover:scale-105 shadow-md">
                         <i class="fas fa-arrow-circle-up ml-2"></i> تأكيد الشراء
                     </button>
-                    <div id="buy-message" class="mt-4 text-center text-red-400 font-semibold text-sm md:text-base"></div>
+                    <div id="buy-message" class="mt-4 text-center text-red-400 font-semibold text-sm"></div>
                 </form>
 
                 <!-- نموذج البيع (مخفي مبدئياً) -->
-                <form id="sell-form" class="hidden space-y-4 md:space-y-6">
+                <form id="sell-form" class="hidden space-y-4">
                     <div>
-                        <label for="sell-symbol" class="block text-gray-300 text-xs md:text-sm font-bold mb-2">اختر العملة للبيع:</label>
-                        <select id="sell-symbol" class="shadow-inner appearance-none border border-gray-600 rounded-lg w-full py-2 px-3 md:py-3 md:px-4 text-gray-200 leading-tight focus:outline-none focus:ring-3 focus:ring-red-500 bg-gray-800 text-sm md:text-base">
+                        <label for="sell-symbol" class="block text-gray-300 text-sm font-bold mb-2">اختر العملة:</label>
+                        <select id="sell-symbol" class="w-full py-2 px-3 rounded-lg focus:ring-red-500 bg-gray-700 text-gray-200">
                             <option value="BTCUSDT">البيتكوين (BTC/USDT)</option>
                             <option value="ETHUSDT">الإيثيريوم (ETH/USDT)</option>
                         </select>
                     </div>
                     <div>
-                        <label for="sell-quantity" class="block text-gray-300 text-xs md:text-sm font-bold mb-2">الكمية التي ترغب ببيعها:</label>
-                        <input type="number" id="sell-quantity" name="quantity" step="any" class="shadow-inner appearance-none border border-gray-600 rounded-lg w-full py-2 px-3 md:py-3 md:px-4 text-gray-200 leading-tight focus:outline-none focus:ring-3 focus:ring-red-500 bg-gray-800 placeholder-gray-500 text-sm md:text-base" placeholder="أدخل الكمية" required>
+                        <label for="sell-order-type" class="block text-gray-300 text-sm font-bold mb-2">نوع الأمر:</label>
+                        <select id="sell-order-type" class="w-full py-2 px-3 rounded-lg focus:ring-red-500 bg-gray-700 text-gray-200">
+                            <option value="market">سوق (Market)</option>
+                            <option value="limit">حد (Limit)</option>
+                        </select>
                     </div>
-                    <p class="text-gray-400 text-sm md:text-base">السعر التقديري للبيع (شامل عمولتك): <span id="sell-estimated-price" class="font-extrabold text-white">0.00</span> USDT</p>
-                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 md:py-3 md:px-6 rounded-full w-full transition-all duration-300 transform hover:scale-105 shadow-md text-sm md:text-base">
+                    <div id="sell-limit-price-group" class="hidden">
+                        <label for="sell-limit-price" class="block text-gray-300 text-sm font-bold mb-2">سعر الحد (USDT):</label>
+                        <input type="number" id="sell-limit-price" name="limitPrice" step="any" class="w-full py-2 px-3 rounded-lg focus:ring-red-500 bg-gray-700 text-gray-200" placeholder="سعر البيع المحدد">
+                    </div>
+                    <div>
+                        <label for="sell-quantity" class="block text-gray-300 text-sm font-bold mb-2">الكمية:</label>
+                        <input type="number" id="sell-quantity" name="quantity" step="any" class="w-full py-2 px-3 rounded-lg focus:ring-red-500 bg-gray-700 text-gray-200" placeholder="أدخل الكمية" required>
+                    </div>
+                    <p class="text-gray-400 text-sm">السعر التقديري: <span id="sell-estimated-price" class="font-extrabold text-white">0.00</span> USDT</p>
+                    <button type="submit" class="btn-sell font-bold py-2 px-4 rounded-full w-full transition-all duration-300 transform hover:scale-105 shadow-md">
                         <i class="fas fa-arrow-circle-down ml-2"></i> تأكيد البيع
                     </button>
-                    <div id="sell-message" class="mt-4 text-center text-red-400 font-semibold text-sm md:text-base"></div>
+                    <div id="sell-message" class="mt-4 text-center text-red-400 font-semibold text-sm"></div>
                 </form>
-            </div>
-        </section>
+            </section>
 
-        <!-- قسم الإيداع والسحب (يظهر بعد تسجيل الدخول وربط الحساب) -->
-        <section id="deposit-withdraw-section" class="hidden w-full max-w-2xl p-4 md:p-6 bg-gray-800 rounded-xl shadow-2xl transition-all duration-500 ease-in-out mt-8">
-            <h2 class="text-2xl md:text-3xl font-extrabold text-blue-400 mb-6">إدارة الأموال <span class="text-white text-lg md:text-xl font-light">إيداع وسحب آمن</span></h2>
-            <p class="text-gray-300 mb-6 text-center text-sm md:text-base">
-                لضمان أعلى مستويات الأمان والشفافية، تتم عمليات الإيداع والسحب مباشرة من حسابك في باينانس.
-                <br>
-                <span class="font-bold text-yellow-400">منصتنا توفر لك واجهة سهلة للوصول إلى هذه العمليات.</span>
-            </p>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                <!-- بطاقة الإيداع -->
-                <div class="bg-gray-700 p-6 rounded-lg shadow-xl text-center border-b-4 border-green-500 flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-lg md:text-xl font-semibold text-gray-200 mb-4">إيداع الأموال</h3>
-                        <p class="text-gray-300 mb-6 text-sm md:text-base">
-                            لإضافة الأموال إلى رصيدك في منصتنا، يرجى إيداعها مباشرة في حسابك الخاص على باينانس.
-                            <br>
-                            <span class="font-semibold text-blue-300">سيتم تحديث رصيدك هنا تلقائياً بعد تأكيد الإيداع في باينانس.</span>
-                        </p>
+            <!-- قسم نظرة عامة على المحفظة (Wallet Overview) -->
+            <section class="panel bg-gray-900 p-6">
+                <h2 class="text-xl md:text-2xl font-bold text-white mb-4">نظرة عامة على المحفظة</h2>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-gray-800 p-4 rounded-lg border border-gray-700 shadow-inner text-center">
+                        <p class="text-gray-400 text-sm">الرصيد الإجمالي (USDT)</p>
+                        <p id="wallet-total-balance" class="text-green-400 text-2xl font-bold mt-1">0.00</p>
                     </div>
-                    <a href="https://www.binance.com/en/my/wallet/deposit/crypto" target="_blank" class="block bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 md:py-3 md:px-6 rounded-full shadow-md transition-all duration-300 transform hover:scale-105 text-sm md:text-base">
-                        <i class="fas fa-wallet ml-2"></i> اذهب إلى صفحة الإيداع في باينانس
-                    </a>
-                    <p class="text-gray-400 text-xs md:text-sm mt-4">نحن لا نحتفظ بأموالك، بل تبقى في حسابك الآمن في باينانس.</p>
+                    <div class="bg-gray-800 p-4 rounded-lg border border-gray-700 shadow-inner text-center">
+                        <p class="text-gray-400 text-sm">BTC</p>
+                        <p id="wallet-btc-balance" class="text-yellow-400 text-2xl font-bold mt-1">0.00</p>
+                    </div>
+                    <div class="bg-gray-800 p-4 rounded-lg border border-gray-700 shadow-inner text-center">
+                        <p class="text-gray-400 text-sm">ETH</p>
+                        <p id="wallet-eth-balance" class="text-purple-400 text-2xl font-bold mt-1">0.00</p>
+                    </div>
+                    <!-- يمكن إضافة المزيد من العملات هنا -->
                 </div>
+                <div class="mt-6 text-center">
+                    <a href="profile.html#full-dashboard-section" class="text-blue-500 hover:underline text-sm font-semibold">
+                        <i class="fas fa-external-link-alt ml-1"></i> عرض لوحة التحكم الكاملة
+                    </a>
+                </div>
+            </section>
 
-                <!-- بطاقة السحب -->
-                <div class="bg-gray-700 p-6 rounded-lg shadow-xl text-center border-b-4 border-red-500 flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-lg md:text-xl font-semibold text-gray-200 mb-4">سحب الأموال</h3>
-                        <p class="text-gray-300 mb-6 text-sm md:text-base">
-                            لسحب أرباحك أو أي جزء من رصيدك، يرجى سحبها مباشرة من حسابك في باينانس.
-                            <br>
-                            <span class="font-semibold text-blue-300">ستظهر عملية السحب في سجل معاملاتك على باينانس.</span>
-                        </p>
-                    </div>
-                    <a href="https://www.binance.com/en/my/wallet/withdraw/crypto" target="_blank" class="block bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 md:py-3 md:px-6 rounded-full shadow-md transition-all duration-300 transform hover:scale-105 text-sm md:text-base">
-                        <i class="fas fa-arrow-alt-circle-up ml-2"></i> اذهب إلى صفحة السحب في باينانس
-                    </a>
-                    <p class="text-gray-400 text-xs md:text-sm mt-4">عمليات السحب تتم بأمان تام عبر باينانس.</p>
+            <!-- قسم سجل التداولات الأخيرة -->
+            <section class="panel bg-gray-900 p-6">
+                <h2 class="text-xl md:text-2xl font-bold text-white mb-4">سجل التداولات الأخيرة</h2>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full">
+                        <thead>
+                            <tr>
+                                <th class="text-right">العملة</th>
+                                <th class="text-right">النوع</th>
+                                <th class="text-right">الكمية</th>
+                                <th class="text-right">السعر</th>
+                                <th class="text-right">التاريخ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="trade-history-body">
+                            <!-- سيتم ملء هذا بواسطة JavaScript -->
+                            <tr>
+                                <td class="text-gray-300">BTC/USDT</td>
+                                <td class="text-green-400">شراء</td>
+                                <td class="text-gray-300">0.01</td>
+                                <td class="text-gray-300">30000 USDT</td>
+                                <td class="text-gray-300">2025-07-14</td>
+                            </tr>
+                            <tr>
+                                <td class="text-gray-300">ETH/USDT</td>
+                                <td class="text-red-400">بيع</td>
+                                <td class="text-gray-300">0.1</td>
+                                <td class="text-gray-300">2000 USDT</td>
+                                <td class="text-gray-300">2025-07-13</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-            </div>
-        </section>
+            </section>
+        </div>
     </main>
 
     <!-- تذييل الصفحة (Footer) -->
-    <footer class="bg-gray-800 p-6 text-center text-gray-400 text-xs md:text-sm mt-8 shadow-inner">
-        <p>&copy; 2025 بوابة التداول الشخصية. جميع الحقوق محفوظة.</p>
+    <footer class="bg-gray-900 p-6 text-center text-gray-400 text-sm mt-8 shadow-inner">
+        <p>&copy; 2025 منصة التداول العالمية. جميع الحقوق محفوظة.</p>
         <p class="mt-2">تداول بذكاء، تداول بأمان.</p>
     </footer>
 
