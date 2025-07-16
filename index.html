@@ -220,6 +220,89 @@
         .hidden {
             display: none !important;
         }
+
+        /* تخصيص دفتر الأوامر لإظهار العمق */
+        .order-book-row {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+        }
+        .order-book-row::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.2; /* شفافية لتظهر البيانات فوقها */
+        }
+        .order-book-bid::before {
+            background-color: #10b981; /* أخضر للشراء */
+        }
+        .order-book-ask::before {
+            background-color: #ef4444; /* أحمر للبيع */
+        }
+        .order-book-price, .order-book-quantity {
+            position: relative;
+            z-index: 1;
+        }
+        .order-book-price.bid { color: #10b981; }
+        .order-book-price.ask { color: #ef4444; }
+
+        /* حجم الخط للسعر الحالي في شريط معلومات السوق */
+        #current-price-large {
+            font-size: 2.5rem; /* حجم كبير جداً */
+            font-weight: 800; /* سميك جداً */
+            margin-left: 1rem;
+        }
+        #current-price-change-24h {
+            font-size: 1.25rem; /* أكبر قليلاً */
+            font-weight: 600;
+        }
+
+        /* Market Pairs Panel specific styles */
+        .market-pairs-panel {
+            background-color: #1a202c;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.15);
+            border: 1px solid #2d3748;
+            overflow: hidden; /* For rounded corners on content */
+        }
+        .market-pairs-panel .search-input {
+            background-color: #2d3748;
+            border-color: #4a5568;
+            color: #e0e6f0;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        .market-pairs-panel .market-pair-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .market-pairs-panel .market-pair-item:hover {
+            background-color: #2d3748;
+        }
+        .market-pairs-panel .market-pair-item.active {
+            background-color: #3b82f6; /* Active selection */
+            color: white;
+            font-weight: 600;
+        }
+        .market-pairs-panel .market-pair-item .price {
+            font-weight: 600;
+        }
+        .market-pairs-panel .market-pair-item .change-positive {
+            color: #10b981;
+        }
+        .market-pairs-panel .market-pair-item .change-negative {
+            color: #ef4444;
+        }
     </style>
 </head>
 <body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col">
@@ -265,28 +348,38 @@
         </div>
     </section>
 
-    <!-- شريط معلومات السوق (Market Info Bar) -->
+    <!-- شريط معلومات السوق (Market Info Bar) - تفاصيل أكثر -->
     <section class="bg-gray-800 py-3 px-4 md:px-6 shadow-md border-b border-gray-700 z-10 relative">
         <div class="container mx-auto flex flex-wrap items-center justify-between text-sm md:text-base font-semibold">
             <div class="flex items-center space-x-4">
                 <span class="text-gray-300">الزوج:</span>
-                <select id="market-pair-select" class="bg-gray-700 text-white rounded-md p-1 px-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="BTCUSDT">BTC/USDT</option>
-                    <option value="ETHUSDT">ETH/USDT</option>
-                </select>
+                <!-- تم إزالة الـ select هنا، وسيتم تحديثه بواسطة JS من لوحة أزواج التداول -->
+                <span id="selected-market-pair" class="text-white text-lg font-bold">BTC/USDT</span>
+                <div class="flex items-baseline">
+                    <span id="current-price-large" class="text-green-400">0.00</span>
+                    <span class="text-gray-400 text-sm mr-1">USDT</span>
+                </div>
             </div>
             <div class="flex flex-wrap items-center gap-4 md:gap-6 mt-2 md:mt-0">
-                <div class="flex items-center">
-                    <span class="text-gray-400 ml-2">السعر:</span>
-                    <span id="current-price" class="text-green-400 text-lg font-bold">0.00</span>
-                </div>
                 <div class="flex items-center">
                     <span class="text-gray-400 ml-2">تغير 24 ساعة:</span>
                     <span id="price-change-24h" class="text-green-400 font-bold">+0.00%</span>
                 </div>
                 <div class="flex items-center">
-                    <span class="text-gray-400 ml-2">حجم 24 ساعة:</span>
-                    <span id="volume-24h" class="text-gray-300 font-bold">0.00</span>
+                    <span class="text-gray-400 ml-2">أعلى سعر 24 ساعة:</span>
+                    <span id="high-24h" class="text-gray-300 font-bold">0.00</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="text-gray-400 ml-2">أدنى سعر 24 ساعة:</span>
+                    <span id="low-24h" class="text-gray-300 font-bold">0.00</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="text-gray-400 ml-2">حجم 24 ساعة (BTC):</span>
+                    <span id="volume-24h-btc" class="text-gray-300 font-bold">0.00</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="text-gray-400 ml-2">حجم 24 ساعة (USDT):</span>
+                    <span id="volume-24h-usdt" class="text-gray-300 font-bold">0.00</span>
                 </div>
             </div>
         </div>
@@ -294,8 +387,56 @@
 
     <!-- المحتوى الرئيسي لصفحة التداول -->
     <main class="flex-grow container mx-auto p-4 md:p-6 lg:p-8 flex flex-col lg:flex-row gap-6">
-        <!-- العمود الأيسر: الرسم البياني، دفتر الأوامر -->
-        <div class="flex-1 flex flex-col gap-6">
+        <!-- لوحة أزواج التداول (Market Pairs Panel) - تظهر على اليمين في RTL -->
+        <div class="lg:w-1/5 flex flex-col gap-6 order-last lg:order-first"> <!-- order-last for mobile, order-first for desktop to place it right -->
+            <section class="market-pairs-panel p-4 flex-grow">
+                <h2 class="text-lg font-bold text-white mb-4">أزواج التداول</h2>
+                <input type="text" id="market-pair-search" placeholder="ابحث عن زوج..." class="search-input w-full mb-4">
+                <div class="overflow-y-auto h-[calc(100vh-250px)] lg:h-[calc(100vh-350px)]"> <!-- ارتفاع ديناميكي -->
+                    <div id="market-pairs-list">
+                        <!-- سيتم ملؤها بواسطة JS -->
+                        <div class="market-pair-item active" data-pair="BTCUSDT">
+                            <span class="font-semibold">BTC/USDT</span>
+                            <div>
+                                <span class="price text-green-400">30100.50</span>
+                                <span class="change-positive ml-2">+0.5%</span>
+                            </div>
+                        </div>
+                        <div class="market-pair-item" data-pair="ETHUSDT">
+                            <span class="font-semibold">ETH/USDT</span>
+                            <div>
+                                <span class="price text-red-400">2000.10</span>
+                                <span class="change-negative ml-2">-0.2%</span>
+                            </div>
+                        </div>
+                        <div class="market-pair-item" data-pair="XRPUSDT">
+                            <span class="font-semibold">XRP/USDT</span>
+                            <div>
+                                <span class="price text-green-400">0.5234</span>
+                                <span class="change-positive ml-2">+1.1%</span>
+                            </div>
+                        </div>
+                        <div class="market-pair-item" data-pair="ADAUSDT">
+                            <span class="font-semibold">ADA/USDT</span>
+                            <div>
+                                <span class="price text-red-400">0.3567</span>
+                                <span class="change-negative ml-2">-0.8%</span>
+                            </div>
+                        </div>
+                        <div class="market-pair-item" data-pair="SOLUSDT">
+                            <span class="font-semibold">SOL/USDT</span>
+                            <div>
+                                <span class="price text-green-400">120.45</span>
+                                <span class="change-positive ml-2">+2.3%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- العمود الأوسط: الرسم البياني، دفتر الأوامر، سجل التداولات -->
+        <div class="lg:w-3/5 flex flex-col gap-6">
             <!-- قسم الرسم البياني (Chart.js Canvas) -->
             <section class="panel bg-gray-900 p-6 flex-grow">
                 <h2 class="text-xl md:text-2xl font-bold text-white mb-4">الرسم البياني <span id="chart-pair-title" class="text-blue-400 text-lg font-light">BTC/USDT</span></h2>
@@ -311,60 +452,89 @@
                 </div>
             </section>
 
-            <!-- قسم دفتر الأوامر (Order Book) -->
-            <section class="panel bg-gray-900 p-6">
-                <h2 class="text-xl md:text-2xl font-bold text-white mb-4">دفتر الأوامر <span id="order-book-pair-title" class="text-blue-400 text-lg font-light">BTC/USDT</span></h2>
-                <div class="grid grid-cols-2 gap-4">
-                    <!-- أوامر الشراء (Bids) -->
-                    <div>
-                        <h3 class="text-lg font-semibold text-green-400 mb-2">عروض الشراء (Bids)</h3>
+            <!-- قسم دفتر الأوامر (Order Book) وسجل التداولات الأخيرة في نفس الصف -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- دفتر الأوامر (Order Book) -->
+                <section class="panel bg-gray-900 p-6">
+                    <h2 class="text-xl md:text-2xl font-bold text-white mb-4">دفتر الأوامر <span id="order-book-pair-title" class="text-blue-400 text-lg font-light">BTC/USDT</span></h2>
+                    <div class="grid grid-cols-1 gap-2">
+                        <!-- أوامر البيع (Asks) -->
+                        <div class="overflow-y-auto h-48 bg-gray-800 rounded-lg p-2 border border-gray-700 shadow-inner flex flex-col-reverse">
+                            <div id="order-book-asks" class="flex flex-col">
+                                <!-- سيتم ملؤها بواسطة JS -->
+                                <div class="order-book-row order-book-ask" style="--depth-width: 70%;">
+                                    <span class="order-book-price ask">30103.00</span>
+                                    <span class="order-book-quantity text-gray-300">0.9</span>
+                                </div>
+                                <div class="order-book-row order-book-ask" style="--depth-width: 50%;">
+                                    <span class="order-book-price ask">30102.50</span>
+                                    <span class="order-book-quantity text-gray-300">1.5</span>
+                                </div>
+                                <div class="order-book-row order-book-ask" style="--depth-width: 20%;">
+                                    <span class="order-book-price ask">30102.00</span>
+                                    <span class="order-book-quantity text-gray-300">0.4</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- السعر الأخير في المنتصف -->
+                        <div class="text-center my-2">
+                            <span id="middle-price" class="text-3xl font-extrabold text-white">30100.50</span>
+                            <span class="text-gray-400 text-sm ml-1">USDT</span>
+                        </div>
+                        <!-- أوامر الشراء (Bids) -->
                         <div class="overflow-y-auto h-48 bg-gray-800 rounded-lg p-2 border border-gray-700 shadow-inner">
-                            <table class="min-w-full text-sm">
-                                <thead>
-                                    <tr>
-                                        <th class="text-right text-gray-400">السعر (USDT)</th>
-                                        <th class="text-right text-gray-400">الكمية (BTC)</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="order-book-bids">
-                                    <!-- سيتم ملؤها بواسطة JS -->
-                                    <tr class="text-green-300"><td>30100.00</td><td>0.5</td></tr>
-                                    <tr class="text-green-300"><td>30099.50</td><td>1.2</td></tr>
-                                    <tr class="text-green-300"><td>30099.00</td><td>0.8</td></tr>
-                                    <tr class="text-green-300"><td>30098.50</td><td>2.1</td></tr>
-                                    <tr class="text-green-300"><td>30098.00</td><td>0.3</td></tr>
-                                </tbody>
-                            </table>
+                            <div id="order-book-bids" class="flex flex-col">
+                                <!-- سيتم ملؤها بواسطة JS -->
+                                <div class="order-book-row order-book-bid" style="--depth-width: 80%;">
+                                    <span class="order-book-price bid">30100.00</span>
+                                    <span class="order-book-quantity text-gray-300">0.5</span>
+                                </div>
+                                <div class="order-book-row order-book-bid" style="--depth-width: 40%;">
+                                    <span class="order-book-price bid">30099.50</span>
+                                    <span class="order-book-quantity text-gray-300">1.2</span>
+                                </div>
+                                <div class="order-book-row order-book-bid" style="--depth-width: 60%;">
+                                    <span class="order-book-price bid">30099.00</span>
+                                    <span class="order-book-quantity text-gray-300">0.8</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <!-- أوامر البيع (Asks) -->
-                    <div>
-                        <h3 class="text-lg font-semibold text-red-400 mb-2">عروض البيع (Asks)</h3>
-                        <div class="overflow-y-auto h-48 bg-gray-800 rounded-lg p-2 border border-gray-700 shadow-inner">
-                            <table class="min-w-full text-sm">
-                                <thead>
-                                    <tr>
-                                        <th class="text-right text-gray-400">السعر (USDT)</th>
-                                        <th class="text-right text-gray-400">الكمية (BTC)</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="order-book-asks">
-                                    <!-- سيتم ملؤها بواسطة JS -->
-                                    <tr class="text-red-300"><td>30101.00</td><td>0.7</td></tr>
-                                    <tr class="text-red-300"><td>30101.50</td><td>1.0</td></tr>
-                                    <tr class="text-red-300"><td>30102.00</td><td>0.4</td></tr>
-                                    <tr class="text-red-300"><td>30102.50</td><td>1.5</td></tr>
-                                    <tr class="text-red-300"><td>30103.00</td><td>0.9</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
+                </section>
+
+                <!-- قسم سجل التداولات الأخيرة -->
+                <section class="panel bg-gray-900 p-6">
+                    <h2 class="text-xl md:text-2xl font-bold text-white mb-4">سجل التداولات الأخيرة</h2>
+                    <div class="overflow-x-auto h-[calc(100%-4rem)]"> <!-- ارتفاع ديناميكي -->
+                        <table class="min-w-full text-sm">
+                            <thead>
+                                <tr>
+                                    <th class="text-right">السعر</th>
+                                    <th class="text-right">الكمية</th>
+                                    <th class="text-right">الوقت</th>
+                                </tr>
+                            </thead>
+                            <tbody id="trade-history-body">
+                                <!-- سيتم ملء هذا بواسطة JavaScript -->
+                                <tr>
+                                    <td class="text-green-400">30100.50</td>
+                                    <td class="text-gray-300">0.01</td>
+                                    <td class="text-gray-400">10:35:12</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-red-400">30101.00</td>
+                                    <td class="text-gray-300">0.05</td>
+                                    <td class="text-gray-400">10:35:05</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
-                </div>
-            </section>
+                </section>
+            </div>
         </div>
 
-        <!-- العمود الأيمن: نماذج التداول، أسعار العملات، سجل التداولات الأخيرة، المحفظة -->
-        <div class="flex-1 flex flex-col gap-6 lg:max-w-md">
+        <!-- العمود الأيسر: نماذج التداول، نظرة عامة على المحفظة، الأوامر المفتوحة/سجل الأوامر -->
+        <div class="lg:w-1/4 flex flex-col gap-6"> <!-- Adjusted width for the right column -->
             <!-- قسم الشراء والبيع -->
             <section class="panel bg-gray-900 p-6">
                 <h2 class="text-xl md:text-2xl font-bold text-white mb-4">تنفيذ أمر التداول</h2>
@@ -407,6 +577,7 @@
                             <button type="button" class="quantity-percent-button bg-gray-700 hover:bg-gray-600 text-gray-300 px-3 py-1 rounded-full" data-percent="100" data-form="buy">100%</button>
                         </div>
                     </div>
+                    <p class="text-gray-400 text-sm">الرصيد المتاح (USDT): <span id="buy-available-usdt" class="font-extrabold text-white">0.00</span></p>
                     <p class="text-gray-400 text-sm">السعر التقديري: <span id="buy-estimated-price" class="font-extrabold text-white">0.00</span> USDT</p>
                     <p class="text-gray-400 text-sm">الإجمالي: <span id="buy-total-amount" class="font-extrabold text-white">0.00</span> USDT</p>
                     <button type="submit" class="btn-buy font-bold py-2 px-4 rounded-full w-full transition-all duration-300 transform hover:scale-105 shadow-md">
@@ -445,6 +616,7 @@
                             <button type="button" class="quantity-percent-button bg-gray-700 hover:bg-gray-600 text-gray-300 px-3 py-1 rounded-full" data-percent="100" data-form="sell">100%</button>
                         </div>
                     </div>
+                    <p class="text-gray-400 text-sm">الرصيد المتاح (<span id="sell-available-asset-symbol">BTC</span>): <span id="sell-available-asset" class="font-extrabold text-white">0.00</span></p>
                     <p class="text-gray-400 text-sm">السعر التقديري: <span id="sell-estimated-price" class="font-extrabold text-white">0.00</span> USDT</p>
                     <p class="text-gray-400 text-sm">الإجمالي: <span id="sell-total-amount" class="font-extrabold text-white">0.00</span> USDT</p>
                     <button type="submit" class="btn-sell font-bold py-2 px-4 rounded-full w-full transition-all duration-300 transform hover:scale-105 shadow-md">
@@ -479,38 +651,75 @@
                 </div>
             </section>
 
-            <!-- قسم سجل التداولات الأخيرة -->
+            <!-- قسم الأوامر المفتوحة وسجل الأوامر -->
             <section class="panel bg-gray-900 p-6">
-                <h2 class="text-xl md:text-2xl font-bold text-white mb-4">سجل التداولات الأخيرة</h2>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full">
-                        <thead>
-                            <tr>
-                                <th class="text-right">العملة</th>
-                                <th class="text-right">النوع</th>
-                                <th class="text-right">الكمية</th>
-                                <th class="text-right">السعر</th>
-                                <th class="text-right">التاريخ</th>
-                            </tr>
-                        </thead>
-                        <tbody id="trade-history-body">
-                            <!-- سيتم ملء هذا بواسطة JavaScript -->
-                            <tr>
-                                <td class="text-gray-300">BTC/USDT</td>
-                                <td class="text-green-400">شراء</td>
-                                <td class="text-gray-300">0.01</td>
-                                <td class="text-gray-300">30000 USDT</td>
-                                <td class="text-gray-300">2025-07-14</td>
-                            </tr>
-                            <tr>
-                                <td class="text-gray-300">ETH/USDT</td>
-                                <td class="text-red-400">بيع</td>
-                                <td class="text-gray-300">0.1</td>
-                                <td class="text-gray-300">2000 USDT</td>
-                                <td class="text-gray-300">2025-07-13</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="flex justify-center mb-6">
+                    <button id="open-orders-tab" class="tab-button active-tab rounded-r-none text-sm py-2 px-4">
+                        <i class="fas fa-list-alt ml-2"></i> الأوامر المفتوحة
+                    </button>
+                    <button id="order-history-tab" class="tab-button rounded-l-none text-sm py-2 px-4">
+                        <i class="fas fa-history ml-2"></i> سجل الأوامر
+                    </button>
+                </div>
+
+                <!-- جدول الأوامر المفتوحة -->
+                <div id="open-orders-content">
+                    <h3 class="text-lg font-bold text-white mb-3">أوامرك المفتوحة</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-sm">
+                            <thead>
+                                <tr>
+                                    <th class="text-right">العملة</th>
+                                    <th class="text-right">النوع</th>
+                                    <th class="text-right">السعر</th>
+                                    <th class="text-right">الكمية</th>
+                                    <th class="text-right">الحالة</th>
+                                    <th class="text-right">إلغاء</th>
+                                </tr>
+                            </thead>
+                            <tbody id="open-orders-body">
+                                <!-- سيتم ملؤها بواسطة JavaScript -->
+                                <tr>
+                                    <td class="text-gray-300">BTC/USDT</td>
+                                    <td class="text-green-400">شراء (حد)</td>
+                                    <td class="text-gray-300">29500</td>
+                                    <td class="text-gray-300">0.02</td>
+                                    <td class="text-yellow-400">معلق</td>
+                                    <td><button class="text-red-500 hover:text-red-700"><i class="fas fa-times-circle"></i></button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- جدول سجل الأوامر (مخفي مبدئياً) -->
+                <div id="order-history-content" class="hidden">
+                    <h3 class="text-lg font-bold text-white mb-3">سجل الأوامر</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-sm">
+                            <thead>
+                                <tr>
+                                    <th class="text-right">العملة</th>
+                                    <th class="text-right">النوع</th>
+                                    <th class="text-right">السعر</th>
+                                    <th class="text-right">الكمية</th>
+                                    <th class="text-right">الحالة</th>
+                                    <th class="text-right">التاريخ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="order-history-body">
+                                <!-- سيتم ملؤها بواسطة JavaScript -->
+                                <tr>
+                                    <td class="text-gray-300">ETH/USDT</td>
+                                    <td class="text-green-400">شراء (سوق)</td>
+                                    <td class="text-gray-300">2000</td>
+                                    <td class="text-gray-300">0.1</td>
+                                    <td class="text-green-400">مكتمل</td>
+                                    <td class="text-gray-300">2025-07-10</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
         </div>
