@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة التداول العالمية - الملف الشخصي</title>
+    <!-- استيراد Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- خط Inter (للمظهر العصري والاحترافي) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- أيقونات Font Awesome (لأيقونات احترافية) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- ربط ملف CSS المخصص (للتصميمات الإضافية والتحسينات الدقيقة) -->
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* إعدادات الخط الأساسية والاتجاه */
+        body {
+            font-family: 'Inter', sans-serif;
+            direction: rtl;
+            text-align: right;
+            background-color: #0a0c10; /* خلفية داكنة جداً جداً */
+            color: #e0e6f0; /* لون نص فاتح ومريح للعين */
+        }
+        /* تخصيص شريط التمرير */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #12151a; }
+        ::-webkit-scrollbar-thumb { background: #3a404b; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #5a606b; }
+
+        /* تخصيص قائمة الجوال لتظهر كشريط جانبي */
+        #mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -300px; /* مخفية في البداية */
+            width: 300px;
+            height: 100%;
+            background-color: #1a202c; /* لون أغمق قليلاً من الخلفية */
+            padding: 2rem;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5);
+            transition: right 0.3s ease-in-out;
+            z-index: 50; /* تأكد أنها فوق المحتوى */
+            display: flex; /* لترتيب العناصر عمودياً */
+            flex-direction: column;
+        }
+        #mobile-menu.active {
+            right: 0; /* تظهر عند التفعيل */
+        }
+        #mobile-menu .close-button {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            color: #cbd5e0;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        #mobile-menu nav {
+            margin-top: 2rem;
+            flex-grow: 1; /* لتأخذ المساحة المتاحة */
+        }
+        #mobile-menu .nav-link, #mobile-menu button {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end; /* محاذاة لليمين */
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.75rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+        #mobile-menu .nav-link i, #mobile-menu button i {
+            margin-right: 0.5rem; /* مسافة بين الأيقونة والنص */
+            margin-left: 0; /* إلغاء الهامش الأيسر إذا كان موجوداً */
+        }
+        #mobile-menu .nav-link {
+            color: #a0aec0; /* لون رمادي فاتح للروابط */
+            transition: background-color 0.2s, color 0.2s;
+        }
+        #mobile-menu .nav-link:hover {
+            background-color: #2d3748;
+            color: #63b3ed; /* أزرق فاتح عند التحويم */
+        }
+        #mobile-menu #mobile-logout-button {
+            background-color: #e53e3e; /* أحمر للخروج */
+            color: white;
+            justify-content: center; /* توسيط زر الخروج */
+            margin-top: auto; /* لدفعه إلى الأسفل */
+        }
+        #mobile-menu #mobile-logout-button:hover {
+            background-color: #c53030;
+        }
+
+        /* تخصيص البطاقات (Panels) */
+        .panel {
+            background-color: #1a202c; /* خلفية الألواح */
+            border-radius: 0.75rem; /* rounded-xl */
+            padding: 1.5rem; /* p-6 */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.15); /* ظل عميق */
+            border: 1px solid #2d3748; /* حدود خفيفة */
+            transition: transform 0.2s ease-in-out; /* انتقال سلس عند التحويم */
+        }
+        .panel:hover {
+            transform: translateY(-2px); /* تأثير رفع خفيف عند التحويم */
+        }
+
+        /* الجداول */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 1rem 1.5rem;
+            text-align: right;
+            border-bottom: 1px solid #2d3748;
+        }
+        thead th {
+            background-color: #1a202c;
+            color: #a0aec0;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+        }
+        tbody tr:nth-child(even) {
+            background-color: #1a202c;
+        }
+        tbody tr:hover {
+            background-color: #2d3748;
+        }
+        tbody td {
+            color: #e0e6f0;
+            font-size: 0.95rem;
+        }
+
+        /* إخفاء العناصر (مهم لـ JavaScript) */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Profile Sub-navigation */
+        .profile-sub-nav-link {
+            display: block;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            transition: background-color 0.2s, color 0.2s;
+            text-align: right;
+        }
+        .profile-sub-nav-link:hover {
+            background-color: #2d3748;
+            color: #e0e6f0;
+        }
+        .profile-sub-nav-link.active-sub-tab {
+            background-color: #3b82f6;
+            color: white;
+            box-shadow: 0 2px 5px rgba(59, 130, 246, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col">
+
+    <!-- رأس الصفحة (Header) - شريط التنقل العلوي الفخم -->
+    <header class="bg-gray-900 p-4 md:p-6 shadow-xl z-30 relative">
+        <div class="container mx-auto flex justify-between items-center">
+            <!-- شعار الموقع -->
+            <a href="index.html" class="flex items-center space-x-2">
+                <i class="fas fa-chart-line text-blue-500 text-3xl md:text-4xl"></i>
+                <h1 class="text-3xl md:text-4xl font-extrabold text-white">بوابة التداول <span class="text-blue-400 text-xl md:text-2xl font-light">العالمية</span></h1>
+            </a>
+            
+            <!-- زر قائمة الجوال (Hamburger menu) -->
+            <button id="mobile-menu-button" class="text-gray-300 focus:outline-none p-2 rounded-md hover:bg-gray-700 transition-colors duration-300">
+                <i class="fas fa-bars text-3xl md:text-4xl"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- قائمة الجوال الجانبية المنبثقة (Side Menu) -->
+    <div id="mobile-menu" class="hidden">
+        <button class="close-button" id="close-mobile-menu"><i class="fas fa-times"></i></button>
+        <nav class="flex flex-col space-y-4 text-center">
+            <a href="index.html" class="nav-link"><i class="fas fa-chart-line ml-2"></i> التداول الفوري</a>
+            <a href="profile.html" class="nav-link text-blue-400 font-bold"><i class="fas fa-user-circle ml-2"></i> الملف الشخصي</a>
+            <a href="deposit_withdraw.html" class="nav-link"><i class="fas fa-money-bill-transfer ml-2"></i> إيداع/سحب</a>
+            <button id="mobile-logout-button" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-full shadow-md transition-all duration-300 transform hover:scale-105 w-full">
+                <i class="fas fa-sign-out-alt ml-2"></i> تسجيل الخروج
+            </button>
+        </nav>
+    </div>
+
+    <!-- شريط الرصيد المصغر (يظهر تحت الهيدر بعد تسجيل الدخول) -->
+    <section id="balance-bar-section" class="hidden bg-gray-800 p-3 shadow-md text-center text-gray-200 z-20 relative">
+        <div class="container mx-auto flex flex-wrap justify-around items-center text-sm md:text-base gap-2">
+            <p class="font-semibold">الرصيد الإجمالي: <span id="balance-bar-total" class="text-green-400 font-bold">0.00 USDT</span></p>
+            <p class="font-semibold">BTC: <span id="balance-bar-btc" class="text-yellow-400 font-bold">0.00</span></p>
+            <p class="font-semibold">ETH: <span id="balance-bar-eth" class="text-purple-400 font-bold">0.00</span></p>
+            <a href="deposit_withdraw.html" class="text-blue-400 hover:underline font-semibold">
+                <i class="fas fa-money-bill-transfer ml-1"></i> إيداع/سحب
+            </a>
+        </div>
+    </section>
+
+    <!-- المحتوى الرئيسي لصفحة الملف الشخصي -->
+    <main class="flex-grow container mx-auto p-4 md:p-6 lg:p-8 flex flex-col lg:flex-row gap-6" id="profile-section">
+        <!-- شريط التنقل الفرعي للملف الشخصي -->
+        <aside class="lg:w-1/4 panel bg-gray-900 p-6">
+            <h2 class="text-xl md:text-2xl font-bold text-white mb-6">إعدادات الملف الشخصي</h2>
+            <nav class="flex flex-col space-y-2">
+                <a href="#" class="profile-sub-nav-link active-sub-tab" data-sub-section="full-dashboard-section">
+                    <i class="fas fa-tachometer-alt ml-2"></i> لوحة التحكم
+                </a>
+                <a href="#" class="profile-sub-nav-link" data-sub-section="api-management-section">
+                    <i class="fas fa-key ml-2"></i> إدارة API
+                </a>
+                <a href="#" class="profile-sub-nav-link" data-sub-section="security-settings-section">
+                    <i class="fas fa-shield-alt ml-2"></i> إعدادات الأمان
+                </a>
+                <a href="#" class="profile-sub-nav-link" data-sub-section="transaction-history-section">
+                    <i class="fas fa-exchange-alt ml-2"></i> سجل المعاملات
+                </a>
+                <button id="full-dashboard-logout-button" class="profile-sub-nav-link bg-red-600 hover:bg-red-700 text-white mt-4">
+                    <i class="fas fa-sign-out-alt ml-2"></i> تسجيل الخروج
+                </button>
+            </nav>
+        </aside>
+
+        <!-- المحتوى الرئيسي للوحة التحكم (لوحة التحكم الكاملة) -->
+        <section class="flex-grow panel bg-gray-900 p-6" id="full-dashboard-section">
+            <h2 class="text-2xl font-bold text-white mb-6">لوحة التحكم الكاملة</h2>
+            <div class="space-y-4">
+                <p class="text-lg text-gray-300">مرحباً بك، <span id="profile-username" class="font-bold text-blue-400">المستخدم</span>!</p>
+                <p class="text-gray-400">تاريخ الانضمام: <span id="profile-join-date" class="font-semibold"></span></p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+                <div class="bg-gray-800 p-5 rounded-lg border border-gray-700 shadow-inner text-center">
+                    <p class="text-gray-400 text-sm">الرصيد الإجمالي (USDT)</p>
+                    <p id="full-total-balance" class="text-green-400 text-3xl font-bold mt-2">0.00</p>
+                </div>
+                <div class="bg-gray-800 p-5 rounded-lg border border-gray-700 shadow-inner text-center">
+                    <p class="text-gray-400 text-sm">رصيد BTC</p>
+                    <p id="full-btc-balance" class="text-yellow-400 text-3xl font-bold mt-2">0.00</p>
+                </div>
+                <div class="bg-gray-800 p-5 rounded-lg border border-gray-700 shadow-inner text-center">
+                    <p class="text-gray-400 text-sm">رصيد ETH</p>
+                    <p id="full-eth-balance" class="text-purple-400 text-3xl font-bold mt-2">0.00</p>
+                </div>
+                <!-- يمكن إضافة المزيد من العملات هنا -->
+            </div>
+
+            <div class="mt-8">
+                <h3 class="text-xl font-bold text-white mb-4">ملخص الأداء</h3>
+                <div class="bg-gray-800 p-5 rounded-lg border border-gray-700 shadow-inner">
+                    <p class="text-gray-400">هنا يمكن عرض رسوم بيانية ملخصية للأداء، مثل نمو المحفظة بمرور الوقت.</p>
+                    <div class="h-48 bg-gray-700 rounded-lg mt-4 flex items-center justify-center text-gray-400">
+                        <p>مكان الرسم البياني لنمو المحفظة</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- قسم إدارة API (مخفي مبدئياً) -->
+        <section class="flex-grow panel bg-gray-900 p-6 hidden" id="api-management-section">
+            <h2 class="text-2xl font-bold text-white mb-6">إدارة مفاتيح API</h2>
+            <p class="text-gray-300 mb-4">اربط حسابك في باينانس لإدارة التداولات.</p>
+            <form class="space-y-4">
+                <div>
+                    <label for="api-key-profile" class="block text-gray-300 text-sm font-bold mb-2">مفتاح API:</label>
+                    <input type="text" id="api-key-profile" class="w-full py-2 px-3 rounded-lg focus:ring-blue-500 bg-gray-700 text-gray-200" placeholder="أدخل مفتاح API الخاص بك">
+                </div>
+                <div>
+                    <label for="secret-key-profile" class="block text-gray-300 text-sm font-bold mb-2">المفتاح السري:</label>
+                    <input type="password" id="secret-key-profile" class="w-full py-2 px-3 rounded-lg focus:ring-blue-500 bg-gray-700 text-gray-200" placeholder="أدخل المفتاح السري الخاص بك">
+                </div>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full transition-all duration-300 transform hover:scale-105 shadow-md">
+                    <i class="fas fa-link ml-2"></i> ربط حساب باينانس
+                </button>
+                <div id="api-message-profile" class="mt-4 text-center text-red-400 font-semibold text-sm"></div>
+            </form>
+        </section>
+
+        <!-- قسم إعدادات الأمان (مخفي مبدئياً) -->
+        <section class="flex-grow panel bg-gray-900 p-6 hidden" id="security-settings-section">
+            <h2 class="text-2xl font-bold text-white mb-6">إعدادات الأمان</h2>
+            <div class="space-y-6">
+                <div>
+                    <h3 class="text-xl font-bold text-white mb-3">تغيير كلمة المرور</h3>
+                    <form class="space-y-4">
+                        <div>
+                            <label for="current-password" class="block text-gray-300 text-sm font-bold mb-2">كلمة المرور الحالية:</label>
+                            <input type="password" id="current-password" class="w-full py-2 px-3 rounded-lg focus:ring-blue-500 bg-gray-700 text-gray-200" placeholder="كلمة المرور الحالية">
+                        </div>
+                        <div>
+                            <label for="new-password" class="block text-gray-300 text-sm font-bold mb-2">كلمة المرور الجديدة:</label>
+                            <input type="password" id="new-password" class="w-full py-2 px-3 rounded-lg focus:ring-blue-500 bg-gray-700 text-gray-200" placeholder="كلمة المرور الجديدة">
+                        </div>
+                        <div>
+                            <label for="confirm-new-password" class="block text-gray-300 text-sm font-bold mb-2">تأكيد كلمة المرور الجديدة:</label>
+                            <input type="password" id="confirm-new-password" class="w-full py-2 px-3 rounded-lg focus:ring-blue-500 bg-gray-700 text-gray-200" placeholder="تأكيد كلمة المرور الجديدة">
+                        </div>
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full transition-all duration-300 transform hover:scale-105 shadow-md">
+                            <i class="fas fa-save ml-2"></i> حفظ كلمة المرور الجديدة
+                        </button>
+                        <div id="password-message" class="mt-4 text-center text-red-400 font-semibold text-sm"></div>
+                    </form>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-white mb-3">المصادقة الثنائية (2FA)</h3>
+                    <p class="text-gray-400 mb-4">قم بتمكين المصادقة الثنائية لمزيد من الأمان.</p>
+                    <button class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full transition-all duration-300 transform hover:scale-105 shadow-md">
+                        <i class="fas fa-shield-check ml-2"></i> تفعيل 2FA
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- قسم سجل المعاملات (مخفي مبدئياً) -->
+        <section class="flex-grow panel bg-gray-900 p-6 hidden" id="transaction-history-section">
+            <h2 class="text-2xl font-bold text-white mb-6">سجل المعاملات</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full text-sm">
+                    <thead>
+                        <tr>
+                            <th class="text-right">النوع</th>
+                            <th class="text-right">العملة</th>
+                            <th class="text-right">المبلغ</th>
+                            <th class="text-right">الحالة</th>
+                            <th class="text-right">التاريخ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="full-transaction-history-body">
+                        <!-- سيتم ملؤها بواسطة JavaScript -->
+                        <tr>
+                            <td class="text-green-400">إيداع</td>
+                            <td class="text-gray-300">USDT</td>
+                            <td class="text-gray-300">500.00</td>
+                            <td class="text-green-400">مكتمل</td>
+                            <td class="text-gray-300">2025-07-15</td>
+                        </tr>
+                        <tr>
+                            <td class="text-red-400">سحب</td>
+                            <td class="text-gray-300">BTC</td>
+                            <td class="text-gray-300">0.001</td>
+                            <td class="text-yellow-400">معلق</td>
+                            <td class="text-gray-300">2025-07-14</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- تذييل الصفحة (Footer) -->
+    <footer class="bg-gray-900 p-6 text-center text-gray-400 text-sm mt-8 shadow-inner">
+        <p>&copy; 2025 منصة التداول العالمية. جميع الحقوق محفوظة.</p>
+        <p class="mt-2">تداول بذكاء، تداول بأمان.</p>
+    </footer>
+
+    <!-- ربط ملف JavaScript الخاص بنا -->
+    <script src="script.js"></script>
+</body>
+</html>
