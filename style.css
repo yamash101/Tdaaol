@@ -244,3 +244,89 @@ tbody td {
     background-color: #4a5568;
     color: #e0e6f0;
 }
+
+/* تخصيص دفتر الأوامر لإظهار العمق */
+.order-book-row {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    overflow: hidden; /* لإخفاء أي تجاوز للخلفية */
+}
+.order-book-row::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    z-index: 0;
+    opacity: 0.2; /* شفافية لتظهر البيانات فوقها */
+    width: var(--depth-width, 0%); /* يتم تعيينه بواسطة JS */
+    transition: width 0.1s ease-out; /* انتقال سلس للعمق */
+}
+.order-book-bid::before {
+    background-color: #10b981; /* أخضر للشراء */
+}
+.order-book-ask::before {
+    background-color: #ef4444; /* أحمر للبيع */
+}
+.order-book-price, .order-book-quantity {
+    position: relative;
+    z-index: 1;
+}
+.order-book-price.bid { color: #10b981; }
+.order-book-price.ask { color: #ef4444; }
+
+/* حجم الخط للسعر الحالي في شريط معلومات السوق */
+#current-price-large {
+    font-size: 2.5rem; /* حجم كبير جداً */
+    font-weight: 800; /* سميك جداً */
+    margin-left: 1rem;
+}
+#current-price-change-24h {
+    font-size: 1.25rem; /* أكبر قليلاً */
+    font-weight: 600;
+}
+
+/* Market Pairs Panel specific styles */
+.market-pairs-panel {
+    background-color: #1a202c;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.15);
+    border: 1px solid #2d3748;
+    overflow: hidden; /* For rounded corners on content */
+}
+.market-pairs-panel .search-input {
+    background-color: #2d3748;
+    border-color: #4a5568;
+    color: #e0e6f0;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+.market-pairs-panel .market-pair-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.market-pairs-panel .market-pair-item:hover {
+    background-color: #2d3748;
+}
+.market-pairs-panel .market-pair-item.active {
+    background-color: #3b82f6; /* Active selection */
+    color: white;
+    font-weight: 600;
+}
+.market-pairs-panel .market-pair-item .price {
+    font-weight: 600;
+}
+.market-pairs-panel .market-pair-item .change-positive {
+    color: #10b981;
+}
+.market-pairs-panel .market-pair-item .change-negative {
+    color: #ef4444;
+}
